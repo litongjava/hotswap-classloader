@@ -40,10 +40,10 @@ public class HotSwapWatcher extends Thread {
     
     this.server = server;
     this.watchingPaths = buildWatchingPaths();
-    System.out.println("watchingPaths:");
-    for (Path path : watchingPaths) {
-      System.out.println(path.getFileName());
-    }
+//    System.out.println("watchingPaths:");
+//    for (Path path : watchingPaths) {
+//      System.out.println(path.getFileName());
+//    }
   }
   
   protected List<Path> buildWatchingPaths() {
