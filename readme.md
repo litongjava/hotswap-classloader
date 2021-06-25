@@ -57,10 +57,11 @@ public class Application {
 ```
 
 完成
-
+整合后的工程  
+https://gitee.com/litongjava_admin/java-ee-spring-boot-study/tree/master/java-ee-spring-boot-2.1.6-study/java-ee-spring-boot-2.1.6-hello
 ### 1.3.idea支持
 
-目前对idea支持还有问题  
+目前已经支持idea  
 HotsWapWatcher 是通过监听 target/classes 下面的 class 文件被修改时触发的热加载  
 而 idea在开发的过程中是不会自动编译的，造成 target/classes 下面的文件没有变化，  
 解决办法有两种  
@@ -80,10 +81,16 @@ Synchronize files on frame or editor tab activation 取消勾选
 显示modified标记,修改文件会在代码编辑窗口的tab区域的文件名上显示"幸好"标记  
 File --> Settings --> Editor --> General --> Editor Tabs --> Mark modified(*) 勾选 --> Apply    
 
-测试修改java文件保存后会重启,但是修改的java文件不会生效  
+注意:同一个包下有至少有2个.java文件，这个包下面的java文件正常热加载；不知道什么原因当目录只有一个.java文件的时候，idea总是把父文件夹删了再新建,导致无法检测到文件变动
+测试详情
+https://jfinal.com/share/2436
 
 ### 1.4 eclipse测试效果图
 
 在spring-boot启动的情况下,向controller添加一个方法,按Ctrl+S保存HotSwapClassloader检测到文件,自动重新加载代码,并生效,加载过程在0.8秒内完成
 
 ![ABC](doc/images/hotswap-classloader-spring-boot-elipse-test.gif)
+
+### 1.5 idea测试效果图
+在spring-boot启动的情况下,向controller添加一个方法,按Ctrl+S保存HotSwapClassloader检测到文件,自动重新加载代码,并生效,加载过程在10.8秒内完成,idea编译大概有10s的延迟
+![ABC](doc/images/hotswap-classloader-spring-boot-idea-test.gif)
