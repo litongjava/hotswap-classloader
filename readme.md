@@ -5,10 +5,15 @@ hotswap-classloader参考jfinal-undertow的hotswap设计开发
 https://gitee.com/jfinal/jfinal-undertow/tree/master/src/main/java/com/jfinal/server/undertow/hotswap
 
 主要功能
-实现spring-boot快速速热加载,测试热加载在0.8s左右
+实现spring-boot快速速热加载,测试热加载在1s左右
 
 简介
-spring-boot开发者福音,修改java文件后按Ctrl+S可在1s内生效,省去手动重启spring-boot的时间
+spring-boot开发者福音,spring-boot集成hotswap-classloader,在eclipse中启动spring-boot,对controller进行任意修改,按Ctrl+S保存,HotSwapClassloader会检测到文件修改,热记载代码并生效,加载过程在1秒内完成
+
+替代产品
+springloaded
+spring-boot-devtools
+JRebel
 
 ### 1.2.和spring-boot整合
 
@@ -18,7 +23,7 @@ spring-boot开发者福音,修改java文件后按Ctrl+S可在1s内生效,省去�
 <dependency>
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
-  <version>1.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
