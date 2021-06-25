@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
+import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
@@ -40,10 +41,8 @@ public class HotSwapWatcher extends Thread {
     
     this.server = server;
     this.watchingPaths = buildWatchingPaths();
-//    System.out.println("watchingPaths:");
-//    for (Path path : watchingPaths) {
-//      System.out.println(path.getFileName());
-//    }
+
+
   }
   
   protected List<Path> buildWatchingPaths() {
@@ -57,7 +56,9 @@ public class HotSwapWatcher extends Thread {
     Collections.sort(dirList);
     
     List<Path> pathList = new ArrayList<Path>(dirList.size());
+    System.out.println("观察的目录有:");
     for (String dir : dirList) {
+      System.out.println(dir);
       pathList.add(Paths.get(dir));
     }
     
@@ -85,6 +86,7 @@ public class HotSwapWatcher extends Thread {
   
   protected void doRun() throws IOException {
     WatchService watcher = FileSystems.getDefault().newWatchService();
+    System.out.println("获取到的文件观察器是:"+watcher);
     addShutdownHook(watcher);
     
     for (Path path : watchingPaths) {
@@ -116,7 +118,10 @@ public class HotSwapWatcher extends Thread {
       
       List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
        for(WatchEvent<?> event : watchEvents) {
+         Kind<?> kind = event.kind();
         String fileName = event.context().toString();
+        
+        System.out.println(watcher.toString()+"检测到文件修改"+kind.toString()+","+fileName);
         if (fileName.endsWith(".class")) {
           if (server.isStarted()) {
             server.restart();

@@ -63,5 +63,10 @@ public class HotSwapUtils {
      */
     return getClassLoaderKit().getClassLoader();
   }
+
+  public static ClassLoader newClassLoader() {
+    classLoaderKit = new ClassLoaderKit(HotSwapUtils.class.getClassLoader(), getHotSwapResolver());
+    return classLoaderKit.getClassLoader();
+  }
   
 }

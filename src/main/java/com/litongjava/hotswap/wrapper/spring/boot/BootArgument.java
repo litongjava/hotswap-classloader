@@ -30,6 +30,9 @@ public class BootArgument {
     return BootClazz;
   }
 
+  public static void setContext(ConfigurableApplicationContext context) {
+    BootArgument.context=context;
+  }
   public static ConfigurableApplicationContext getContext() {
     return BootArgument.context;
   }
