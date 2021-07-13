@@ -24,12 +24,9 @@ JRebel
 <dependency>
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.3</version>
 </dependency>
 ```
-
-
-
 修改启动类
 使用
 
