@@ -99,7 +99,7 @@ public class HotSwapWatcher extends Thread {
         // watchKey = watcher.poll(watchingInterval, TimeUnit.MILLISECONDS); //
         // watcher.take(); 阻塞等待
         // 比较两种方式的灵敏性，或许 take() 方法更好，起码资源占用少，测试 windows 机器上的响应
-        watchKey = watcher.take();
+        watchKey = watcher.poll();
 
         if (watchKey == null) {
           // System.out.println(System.currentTimeMillis() / 1000);
@@ -114,6 +114,7 @@ public class HotSwapWatcher extends Thread {
       }
 
       List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
+      System.out.println("文件修改个数:" + watchEvents.size());
       for (WatchEvent<?> event : watchEvents) {
         Kind<?> kind = event.kind();
         String fileName = event.context().toString();
@@ -122,11 +123,20 @@ public class HotSwapWatcher extends Thread {
         if (fileName.endsWith(".class")) {
           if (server.isStarted()) {
             server.restart();
+            resetWatchKey();
+
+            while ((watchKey = watcher.poll()) != null) {
+              System.out.println("跳过的文件修改个数:" + watchKey.pollEvents().size());
+              resetWatchKey();
+            }
+            //跳出for循环
+            break ;
           }
         }
-      }//end for
+      }
       resetWatchKey();
-    }//-->end while
+      
+    } // -->end while
   }
 
   private void resetWatchKey() {
