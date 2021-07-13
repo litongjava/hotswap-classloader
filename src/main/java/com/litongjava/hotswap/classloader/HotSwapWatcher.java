@@ -122,10 +122,10 @@ public class HotSwapWatcher extends Thread {
         if (fileName.endsWith(".class")) {
           if (server.isStarted()) {
             server.restart();
-            resetWatchKey();
           }
         }
-      }
+      }//end for
+      resetWatchKey();
     }//-->end while
   }
 

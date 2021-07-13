@@ -1,4 +1,5 @@
-## hotswap-classloader
+# hotswap-classloader
+## 1.简介和使用
 ### 1.1.hotswap-classloader简介
 
 hotswap-classloader参考jfinal-undertow的hotswap设计开发
@@ -85,12 +86,32 @@ File --> Settings --> Editor --> General --> Editor Tabs --> Mark modified(*) �
 测试详情
 https://jfinal.com/share/2436
 
-### 1.4 eclipse测试效果图
+
+### 1.4 linux支持
+如果再linux上使用mvn spring-boot:run 启动spring-boot项目,默认使用的类加载器是plexus-classworlds  
+如果要使用本加载器,还需要在pom.xml中添加下面的配置
+fork 设置为 true，会在 maven 运行的时候新创建一个虚拟机执行。hotswap-classloader这个新创建 JVM中会生效  
+ 它速度会稍慢一些，但是隔离性非常好
+```
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <fork>true</fork> <!-- 如果没有该配置，devtools不会生效 -->
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+```
+## 2.使用效果截图
+### 2.1.eclipse测试效果图
 
 在spring-boot启动的情况下,向controller添加一个方法,按Ctrl+S保存HotSwapClassloader检测到文件,自动重新加载代码,并生效,加载过程在0.8秒内完成
 
 ![ABC](doc/images/hotswap-classloader-spring-boot-elipse-test.gif)
 
-### 1.5 idea测试效果图
+### 2.2.idea测试效果图
 在spring-boot启动的情况下,向controller添加一个方法,按Ctrl+S保存HotSwapClassloader检测到文件,自动重新加载代码,并生效,加载过程在10.8秒内完成,idea编译大概有10s的延迟
 ![ABC](doc/images/hotswap-classloader-spring-boot-idea-test.gif)
