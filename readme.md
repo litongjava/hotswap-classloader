@@ -66,9 +66,15 @@ HotsWapWatcher 是通过监听 target/classes 下面的 class 文件被修改时
 第一种:通过快捷键 Ctrl + F9 触发编译,在IntelliJ IDEA 2019.3.3 (Ultimate Edition)测试失败  
 第一种:可以让 IDEA 像 eclipse 一样开启自动编译,IntelliJ IDEA 2019.3.3 (Ultimate Edition)配置方法如下  
 第一步:  
+开启自动编译
 File-->Settings-->Compiler-->勾选Build project automaitcally  
+使用eclipse编译器
+不像Javac编译器，Eclipse编译器可以利用CPU多核加快编译速度。
+File-->Settings-->Build,Execution,Deployment-->Compiler-->Java Compiler
+Use compiler选择eclipse
+
 第二步:  
-安装快捷键Ctrl+Shift+A-->输入Registry并进入-->勾线compiler.automake.allow.when.app.running  
+安装快捷键Ctrl+Shift+A-->输入Registry并进入-->勾选compiler.automake.allow.when.app.running  
 第三步:
 取消idea自动保存代码  
 File --> Settings--> Appearance & Behavior --> System Settings -->  
