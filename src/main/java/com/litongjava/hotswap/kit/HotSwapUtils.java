@@ -1,7 +1,11 @@
 package com.litongjava.hotswap.kit;
 
-import com.litongjava.hotswap.classloader.HotSwapResolver;
+import com.litongjava.hotswap.debug.Diagnostic;
+import com.litongjava.hotswap.watcher.HotSwapResolver;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class HotSwapUtils {
 
   public static String[] args;
@@ -18,6 +22,9 @@ public class HotSwapUtils {
   protected static ClassLoaderKit getClassLoaderKit() {
     if (classLoaderKit == null) {
       classLoaderKit = new ClassLoaderKit(HotSwapUtils.class.getClassLoader(), getHotSwapResolver());
+      if (Diagnostic.isDebug()) {
+        log.info("create new kit:{}", classLoaderKit);
+      }
     }
     return classLoaderKit;
   }
@@ -25,7 +32,6 @@ public class HotSwapUtils {
   public static HotSwapResolver getHotSwapResolver() {
     if (hotSwapResolver == null) {
       hotSwapResolver = new HotSwapResolver(getClassPathDirs());
-      // 后续将此代码转移至 HotSwapResolver 中去，保持 UndertowConfig 的简洁
       if (hotSwapClassPrefix != null) {
         for (String prefix : hotSwapClassPrefix.split(",")) {
           if (isEmpty(prefix)) {
@@ -52,15 +58,7 @@ public class HotSwapUtils {
   }
 
   public static ClassLoader getClassLoader() {
-    // return isDevMode() ? getClassLoaderKit().getClassLoader() : Undertow.class.getClassLoader();
-    
-    /**
-     * 不论是否为 devMode 都使用 HotSwapClassLoader
-     * HotSwapClassLoader 添加了 isDevMode() 判断
-     * 一直使用 HotSwapClassLoader 是因为为其添加了
-     * 配置文件 config 目录到 class path，以便可以加载
-     * 外部配置文件
-     */
+    //使用ClassLoaderKit()获取HotswapClassLoader
     return getClassLoaderKit().getClassLoader();
   }
 
@@ -68,5 +66,5 @@ public class HotSwapUtils {
     classLoaderKit = new ClassLoaderKit(HotSwapUtils.class.getClassLoader(), getHotSwapResolver());
     return classLoaderKit.getClassLoader();
   }
-  
+
 }

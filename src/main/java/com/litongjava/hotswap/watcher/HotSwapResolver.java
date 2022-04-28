@@ -1,4 +1,4 @@
-package com.litongjava.hotswap.classloader;
+package com.litongjava.hotswap.watcher;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,14 +35,8 @@ public class HotSwapResolver {
    * 添加org.quartz.出现下面的错误
    * Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.quartz.Scheduler' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
    */
-  protected String[] hotSwapClassPrefix = { "com.jfinal.",
-
-//      "net.sf.ehcache.",          // 支持 ehcache，否则从 ehcache 中读取到的数据将出现类型转换异常
-      "redis.clients.", "org.nustaq.", // 支持 RedisPlugin
-//      "org.quartz.",            // 支持 quartz
-
-      "net.dreamlu." // 支持 JFinal-event 等出自 net.dreamlu 的插件
-  };
+  protected static String[] hotSwapClassPrefix = {}; 
+  
 
   public HotSwapResolver(String[] classPathDirs) {
     // 不必判断 length == 0，因为在打包后的生产环境获取到的 length 可以为 0
@@ -134,7 +128,7 @@ public class HotSwapResolver {
    * 重要：在热加载过后，如果出现类型转换异常，找到无法转换的类
    *      调用本方法添加相关前缀即可解决
    */
-  public synchronized void addHotSwapClassPrefix(String prefix) {
+  public static synchronized void addHotSwapClassPrefix(String prefix) {
     List<String> list = new ArrayList<>();
     for (String s : hotSwapClassPrefix) {
       list.add(s);

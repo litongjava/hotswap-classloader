@@ -5,14 +5,18 @@ import java.text.DecimalFormat;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import com.litongjava.hotswap.debug.Diagnostic;
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.server.RestartServer;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author create by ping-e-lee on 2021年6月23日 上午7:43:44 
  * @version 1.0 
  * @desc 不要被server的名字所迷惑,这仅仅是一个重启类
  */
+@Slf4j
 public class SpringBootRestartServer implements RestartServer {
 
   protected DecimalFormat decimalFormat = new DecimalFormat("#.#");
@@ -22,10 +26,11 @@ public class SpringBootRestartServer implements RestartServer {
   }
 
   public void restart() {
+    System.err.println("loading");
     long start = System.currentTimeMillis();
+    //关闭Spring容器,等于关闭spring,同时也等于关闭web中间件,因为web中间件在spring的容器中
     BootArgument.getContext().close();
-//    SpringApplicationWrapper.run(BootArgument.getBootClazz(), BootArgument.getArgs(), true);
-
+    //获取启动类和启动参数
     Class<?> clazz = BootArgument.getBootClazz();
     String[] args = BootArgument.getArgs();
     /**
@@ -49,8 +54,12 @@ public class SpringBootRestartServer implements RestartServer {
 //    Method getClassLoaderMethod = ReflectionUtils.getMethod(hotSwapUtilsClzz, "getClassLoader");
 //    ClassLoader hotSwapClassLoader =(ClassLoader) ReflectionUtils.invoke(getClassLoaderMethod);
     
+    //获取一个新的ClassLoader
     ClassLoader hotSwapClassLoader = HotSwapUtils.newClassLoader();
-    System.out.println("new classLoader:"+hotSwapClassLoader);
+    if(Diagnostic.isDebug()) {
+      log.info("new classLoader:{}",hotSwapClassLoader);
+    }
+    
     /**
      * 在启动新的spring-boot应用之前必须设置上下文加载器
      */
@@ -61,8 +70,6 @@ public class SpringBootRestartServer implements RestartServer {
      */
     ConfigurableApplicationContext context = SpringApplication.run(clazz, args);
     BootArgument.setContext(context);
-
-
     
     System.err.println("Loading complete in " + getTimeSpent(start) + " seconds (^_^)\n");
   }

@@ -1,4 +1,4 @@
-package com.litongjava.hotswap.classloader;
+package com.litongjava.hotswap.watcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,12 +16,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.litongjava.hotswap.debug.Diagnostic;
 import com.litongjava.hotswap.kit.UndertowKit;
 import com.litongjava.hotswap.server.RestartServer;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * 监听 class path 下 .class 文件变动，触发 UndertowServer.restart()
+ * 监听 class path 下 .class 文件变动,并重启服务器
  */
+@Slf4j
 public class HotSwapWatcher extends Thread {
 
   protected RestartServer server;
@@ -55,9 +59,13 @@ public class HotSwapWatcher extends Thread {
     Collections.sort(dirList);
 
     List<Path> pathList = new ArrayList<Path>(dirList.size());
-    System.out.println("观察的目录有:");
+    if (Diagnostic.isDebug()) {
+      log.info("观察的目录有:");
+    }
     for (String dir : dirList) {
-      System.out.println(dir);
+      if (Diagnostic.isDebug()) {
+        System.out.println(dir);
+      }
       pathList.add(Paths.get(dir));
     }
 
@@ -85,7 +93,9 @@ public class HotSwapWatcher extends Thread {
 
   protected void doRun() throws IOException {
     WatchService watcher = FileSystems.getDefault().newWatchService();
-    System.out.println("获取到的文件观察器是:" + watcher);
+    if (Diagnostic.isDebug()) {
+      log.info("文件观察器:{}",watcher);
+    }
     addShutdownHook(watcher);
 
     for (Path path : watchingPaths) {
@@ -107,35 +117,41 @@ public class HotSwapWatcher extends Thread {
         }
       } catch (Throwable e) { // 控制台 ctrl + c 退出 JVM 时也将抛出异常
         running = false;
-        if (e instanceof InterruptedException) { // 另一线程调用 hotSwapWatcher.interrupt() 抛此异常
+        if (e instanceof InterruptedException) { // 另一线程调用
+                                                 // hotSwapWatcher.interrupt()
+                                                 // 抛此异常
           Thread.currentThread().interrupt(); // Restore the interrupted status
         }
         break;
       }
 
       List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
-      System.out.println("文件修改个数:" + watchEvents.size());
+      if (Diagnostic.isDebug()) {
+        log.info("文件修改个数:{}", watchEvents.size());
+      }
       for (WatchEvent<?> event : watchEvents) {
         Kind<?> kind = event.kind();
         String fileName = event.context().toString();
 
-        System.out.println(watcher.toString() + "检测到文件修改" + kind.toString() + "," + fileName);
+        if (Diagnostic.isDebug()) {
+          log.info("{} 检测到文件修改 {},{}", watcher.toString(), kind.toString(), fileName);
+        }
         if (fileName.endsWith(".class")) {
           if (server.isStarted()) {
             server.restart();
             resetWatchKey();
 
             while ((watchKey = watcher.poll()) != null) {
-              System.out.println("跳过的文件修改个数:" + watchKey.pollEvents().size());
+              log.info("跳过的文件修改个数:{}", watchKey.pollEvents().size());
               resetWatchKey();
             }
-            //跳出for循环
-            break ;
+            // 跳出for循环
+            break;
           }
         }
       }
       resetWatchKey();
-      
+
     } // -->end while
   }
 
@@ -153,13 +169,14 @@ public class HotSwapWatcher extends Thread {
    *      kill 不带参数 -9 时才回调
    */
   protected void addShutdownHook(WatchService watcher) {
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+    Thread hook = new Thread(() -> {
       try {
         watcher.close();
       } catch (Throwable e) {
         UndertowKit.doNothing(e);
       }
-    }));
+    });
+    Runtime.getRuntime().addShutdownHook(hook);
   }
 
   public void exit() {
@@ -171,11 +188,11 @@ public class HotSwapWatcher extends Thread {
     }
   }
 
-//  public static void main(String[] args) throws InterruptedException {
-//    HotSwapWatcher watcher = new HotSwapWatcher(null);
-//    watcher.start();
-//    
-//    System.out.println("启动成功");
-//    Thread.currentThread().join(99999999);
-//  }
+  // public static void main(String[] args) throws InterruptedException {
+  // HotSwapWatcher watcher = new HotSwapWatcher(null);
+  // watcher.start();
+  //
+  // System.out.println("启动成功");
+  // Thread.currentThread().join(99999999);
+  // }
 }

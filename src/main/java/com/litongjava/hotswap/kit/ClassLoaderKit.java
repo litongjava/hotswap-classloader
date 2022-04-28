@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.litongjava.hotswap.classloader.HotSwapClassLoader;
-import com.litongjava.hotswap.classloader.HotSwapResolver;
+import com.litongjava.hotswap.watcher.HotSwapResolver;
 
 /**
  * ClassLoaderKit
@@ -31,7 +31,7 @@ public class ClassLoaderKit {
     this.classPathUrls = buildClassPathUrls();
     this.parentClassLoader = parentClassLoader;
     this.hotSwapResolver = hotSwapResolver;
-    
+    //创建HotSwapClassLoader
     this.currentClassLoader = new HotSwapClassLoader(classPathUrls, parentClassLoader, hotSwapResolver);
   }
   
