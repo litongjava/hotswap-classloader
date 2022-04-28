@@ -24,14 +24,17 @@ JRebel
 <dependency>
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
 </dependency>
 ```
-修改启动类
-使用
-
+添加配置文件  
+在src/main/resource/下新建config.properties,文件内容如下
 ```
-SpringApplicationWrapper.run(Application.class, args, true);
+mode=dev
+```
+修改启动类代码
+```
+SpringApplicationWrapper.run(Application.class, args);
 ```
 
 修改后如下
@@ -49,17 +52,17 @@ public class Application {
 
   public static void main(String[] args) {
     //SpringApplication.run(Application.class, args);
-    SpringApplicationWrapper.run(Application.class, args, true);
+    SpringApplicationWrapper.run(Application.class, args);
   }
 }
 ```
-
-完成
-整合后的工程  
-https://gitee.com/litongjava_admin/java-ee-spring-boot-study/tree/master/java-ee-spring-boot-2.1.6-study/java-ee-spring-boot-2.1.6-hello
+SpringApplicationWrapper会读取config.properties文件中的键mode的值,如果值为dev则启动hotswapwather监听类的变化,使用热加载,否则这不使用   
+整合完成  
+整合后的工程    
+https://gitee.com/litongjava_admin/java-ee-spring-boot-study/tree/master/java-ee-spring-boot-2.1.6-study/java-ee-spring-boot-2.1.6-hello  
 ### 1.3.idea支持
 ##### 1.3.1.版本信息
-idea版本信息如下
+idea版本信息如下  
 ![](readme_files/1.jpg)
 
 #### 1.3.2 为什么要进行热加载配置
@@ -67,7 +70,7 @@ HotsWapWatcher 是通过监听 target/classes 下面的 class 文件被修改时
 而 idea在开发的过程中是不会自动编译的，造成 target/classes 下面的文件没有变化，  
 解决办法有两种  
 第一种:通过快捷键 Ctrl + F9 触发编译,在IntelliJ IDEA 2019.3.3 (Ultimate Edition)测试失败  
-第一种:可以让 IDEA 像 eclipse 一样开启自动编译,IntelliJ IDEA 2019.3.3 (Ultimate Edition)配置方法如下
+第二种:可以让 IDEA 像 eclipse 一样开启自动编译,IntelliJ IDEA 2019.3.3 (Ultimate Edition)配置方法如下
 
 #### 1.3.3.IDEA 热加载设置
 ##### build project automatically
