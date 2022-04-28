@@ -6,7 +6,7 @@ hotswap-classloader参考jfinal-undertow的hotswap设计开发
 https://gitee.com/jfinal/jfinal-undertow/tree/master/src/main/java/com/jfinal/server/undertow/hotswap
 
 主要功能
-实现spring-boot快速速热加载,测试热加载在1s左右
+实现应用快速速热加载,测试热加载在1s左右
 
 简介
 spring-boot开发者福音,spring-boot集成hotswap-classloader,在eclipse中启动spring-boot,对controller进行任意修改,按Ctrl+S保存,HotSwapClassloader会检测到文件修改,热记载代码并生效,加载过程在1秒内完成
@@ -62,6 +62,7 @@ https://gitee.com/litongjava_admin/java-ee-spring-boot-study/tree/master/java-ee
 目前已经支持idea  
 HotsWapWatcher 是通过监听 target/classes 下面的 class 文件被修改时触发的热加载  
 而 idea在开发的过程中是不会自动编译的，造成 target/classes 下面的文件没有变化，  
+
 解决办法有两种  
 第一种:通过快捷键 Ctrl + F9 触发编译,在IntelliJ IDEA 2019.3.3 (Ultimate Edition)测试失败  
 第一种:可以让 IDEA 像 eclipse 一样开启自动编译,IntelliJ IDEA 2019.3.3 (Ultimate Edition)配置方法如下  

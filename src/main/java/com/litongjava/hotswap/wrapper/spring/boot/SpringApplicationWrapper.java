@@ -1,7 +1,11 @@
 package com.litongjava.hotswap.wrapper.spring.boot;
 
+import java.io.IOException;
+import java.util.Properties;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import com.litongjava.hotswap.watcher.HotSwapWatcher;
 
@@ -16,6 +20,22 @@ import lombok.extern.slf4j.Slf4j;
 public class SpringApplicationWrapper {
   protected static volatile HotSwapWatcher hotSwapWatcher;
 
+  
+  /**
+   * 读取配置文件 environment.properties
+   * @return
+   */
+  public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
+    String mode=null;
+    try {
+      Properties properties = PropertiesLoaderUtils.loadAllProperties("config.properties");
+      mode= properties.getProperty("mode");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return run(primarySource, args,"dev".equals(mode));
+  }
+  
   /**
    * 如果isDev=true
    * 使用自定义的HostSwapClassLoader启动SpringApplication
