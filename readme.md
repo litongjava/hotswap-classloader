@@ -1,20 +1,20 @@
 # hotswap-classloader
 ## 1.简介
-hotswap-classloader简介  
-基于jvm的动态类加载器
+hotswap-classloader简介    
+基于jvm的动态类加载器,使用HotSwapWatcher加HotSwapClassloader技术,动态检测class文件修改    
 hotswap-classloader参考jfinal-undertow的hotswap设计开发  
-https://gitee.com/jfinal/jfinal-undertow/tree/master/src/main/java/com/jfinal/server/undertow/hotswap
+https://gitee.com/jfinal/jfinal-undertow/tree/master/src/main/java/com/jfinal/server/undertow/hotswap  
 
-主要功能
-实现应用快速速热加载,测试热加载在1s左右
+主要功能  
+实现应用快速速热加载,测试热加载在1s左右  
 
-简介
-spring-boot开发者福音,spring-boot集成hotswap-classloader,在eclipse中启动spring-boot,对controller进行任意修改,按Ctrl+S保存,使用HotSwapWatcher加HotSwapClassloader技术,动态检测class文件修改,重启应用解析class并生效,加载过程在1秒内完成
+加载速度 
+spring-boot集成hotswap-classloader之后,在eclipse中启动spring-boot,对controller进行任意修改,按Ctrl+S保存,自动重启应用解析class并生效,整体过程在1秒内完成  
 
-替代产品
-springloaded
-spring-boot-devtools
-JRebel
+替代产品  
+springloaded  
+spring-boot-devtools  
+JRebel  
 ## 2.使用
 ### 1.2.和spring-boot整合
 
@@ -59,7 +59,7 @@ public class Application {
 SpringApplicationWrapper会读取config.properties文件中的键mode的值,如果值为dev则启动hotswapwather监听类的变化,使用热加载,否则这不使用   
 整合完成  
 整合后的工程    
-https://gitee.com/litongjava_admin/java-ee-spring-boot-study/tree/master/java-ee-spring-boot-2.1.6-study/java-ee-spring-boot-2.1.6-hello  
+https://gitee.com/ppnt/java-ee-spring-boot-study/tree/master/maven/java-ee-spring-boot-2.1.6-study/java-ee-spring-boot-2.1.6-hello  
 ### 1.3.idea支持
 ##### 1.3.1.版本信息
 idea版本信息如下  
