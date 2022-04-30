@@ -7,7 +7,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @version 1.0 
  * @desc
  */
-public class BootApplicationContext {
+public class SpringBootApplicationContext {
 
   public static ConfigurableApplicationContext context;
 
@@ -20,6 +20,6 @@ public class BootApplicationContext {
 //  }
 
   public static void setContext(ConfigurableApplicationContext context) {
-    BootApplicationContext.context = context;
+    SpringBootApplicationContext.context = context;
   }
 }

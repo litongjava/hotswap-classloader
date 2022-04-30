@@ -7,7 +7,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @version 1.0 
  * @desc 保存spring-boot启动时的启动参数
  */
-public class BootArgument {
+public class SpringBootArgument {
 
   private static String[] args;
   private static Class<?> BootClazz;
@@ -15,15 +15,15 @@ public class BootArgument {
   private static Boolean isDev = false;
 
   public static void setArgs(String[] args) {
-    BootArgument.args = args;
+    SpringBootArgument.args = args;
   }
 
   public static String[] getArgs() {
-    return BootArgument.args;
+    return SpringBootArgument.args;
   }
 
   public static void setBootClazz(Class<?> clazz) {
-    BootArgument.BootClazz = clazz;
+    SpringBootArgument.BootClazz = clazz;
   }
 
   public static Class<?> getBootClazz() {
@@ -31,21 +31,21 @@ public class BootArgument {
   }
 
   public static void setContext(ConfigurableApplicationContext context) {
-    BootArgument.context=context;
+    SpringBootArgument.context=context;
   }
   public static ConfigurableApplicationContext getContext() {
-    return BootArgument.context;
+    return SpringBootArgument.context;
   }
 
   public boolean getIsDev() {
-    return BootArgument.isDev;
+    return SpringBootArgument.isDev;
   }
 
   public static void init(Class<?> clazz, String[] args, ConfigurableApplicationContext context, Boolean isDev) {
-    BootArgument.args = args;
-    BootArgument.BootClazz = clazz;
-    BootArgument.context = context;
-    BootArgument.isDev = isDev;
+    SpringBootArgument.args = args;
+    SpringBootArgument.BootClazz = clazz;
+    SpringBootArgument.context = context;
+    SpringBootArgument.isDev = isDev;
   }
 
 }

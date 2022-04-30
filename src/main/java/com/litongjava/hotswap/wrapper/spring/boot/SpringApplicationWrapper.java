@@ -20,22 +20,22 @@ import lombok.extern.slf4j.Slf4j;
 public class SpringApplicationWrapper {
   protected static volatile HotSwapWatcher hotSwapWatcher;
 
-  
   /**
+   * 整合spring-boot 1.2.x
    * 读取配置文件 environment.properties
    * @return
    */
   public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
-    String mode=null;
+    String mode = null;
     try {
       Properties properties = PropertiesLoaderUtils.loadAllProperties("config.properties");
-      mode= properties.getProperty("mode");
+      mode = properties.getProperty("mode");
     } catch (IOException e) {
       e.printStackTrace();
     }
-    return run(primarySource, args,"dev".equals(mode));
+    return run(primarySource, args, "dev".equals(mode));
   }
-  
+
   /**
    * 如果isDev=true
    * 使用自定义的HostSwapClassLoader启动SpringApplication
@@ -73,25 +73,22 @@ public class SpringApplicationWrapper {
    */
   private static ConfigurableApplicationContext runDev(Class<?> primarySource, String[] args) {
     // 获取自定义的classLoalder
-//    ClassLoader hotSwapClassLoader = HotSwapUtils.getClassLoader();
-//    log.info("hotSwapClassLoader:{}", hotSwapClassLoader);
+    // ClassLoader hotSwapClassLoader = HotSwapUtils.getClassLoader();
+    // log.info("hotSwapClassLoader:{}", hotSwapClassLoader);
 
-    /**
-     * 设置线程上下文类加载器,因为Spring Boot在加载一些类的使用的就是这个线程上下文类加载器,
-     * 而默认的线程上下文类加载器等于ClassLoader.getSystemClassLoader(),
-     * 如果两个类加载器加载同一个类文件就会认为是两个类,会无法赋值,Spring Boot也起不来
-     */
-    //Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
-
+    
+    // 第一次启动不需要使用自定义的类加载器,使用默认的类加载器即可
+    // Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
+    ConfigurableApplicationContext context = SpringApplication.run(primarySource, args);
+    SpringBootArgument.init(primarySource, args, context, true);
+    
+    //context启动成功之后再启动hotswapwathcer
     if (hotSwapWatcher == null) {
       // 使用反射执行下面的代码
       log.info("start hotSwapWatcher");
       hotSwapWatcher = new HotSwapWatcher(new SpringBootRestartServer());
       hotSwapWatcher.start();
     }
-
-    ConfigurableApplicationContext context = SpringApplication.run(primarySource, args);
-    BootArgument.init(primarySource, args, context, true);
     return context;
   }
 }
