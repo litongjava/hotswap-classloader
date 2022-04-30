@@ -76,19 +76,20 @@ public class SpringApplicationWrapper {
     // ClassLoader hotSwapClassLoader = HotSwapUtils.getClassLoader();
     // log.info("hotSwapClassLoader:{}", hotSwapClassLoader);
 
-    
     // 第一次启动不需要使用自定义的类加载器,使用默认的类加载器即可
     // Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
     ConfigurableApplicationContext context = SpringApplication.run(primarySource, args);
     SpringBootArgument.init(primarySource, args, context, true);
-    
-    //context启动成功之后再启动hotswapwathcer
+
+    //需要在spring启动之前启动hotswapWatcher,否则springboot重启之后,hotswapWatcher会也关闭 测试不需要
+    //在spring-boot启动之后再启动hotSwapWatcher
     if (hotSwapWatcher == null) {
       // 使用反射执行下面的代码
       log.info("start hotSwapWatcher");
       hotSwapWatcher = new HotSwapWatcher(new SpringBootRestartServer());
       hotSwapWatcher.start();
     }
+    
     return context;
   }
 }

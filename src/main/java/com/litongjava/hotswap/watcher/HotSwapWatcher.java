@@ -94,7 +94,7 @@ public class HotSwapWatcher extends Thread {
   protected void doRun() throws IOException {
     WatchService watcher = FileSystems.getDefault().newWatchService();
     if (Diagnostic.isDebug()) {
-      log.info("文件观察器:{}",watcher);
+      log.info("文件观察器:{}", watcher);
     }
     addShutdownHook(watcher);
 
@@ -142,7 +142,11 @@ public class HotSwapWatcher extends Thread {
             resetWatchKey();
 
             while ((watchKey = watcher.poll()) != null) {
-              log.info("跳过的文件修改个数:{}", watchKey.pollEvents().size());
+              List<WatchEvent<?>> pollEvents = watchKey.pollEvents();
+              if(Diagnostic.isDebug()) {
+                log.info("跳过的文件修改个数:{}", pollEvents.size());
+              }
+              
               resetWatchKey();
             }
             // 跳出for循环
@@ -171,6 +175,7 @@ public class HotSwapWatcher extends Thread {
   protected void addShutdownHook(WatchService watcher) {
     Thread hook = new Thread(() -> {
       try {
+        log.info("stop hotswapWatcher");
         watcher.close();
       } catch (Throwable e) {
         UndertowKit.doNothing(e);
