@@ -35,7 +35,7 @@ public class HotSwapClassLoader extends URLClassLoader {
       // First, check if the class has already been loaded
       Class<?> c = findLoadedClass(name);
       if (Diagnostic.isDebug()) {
-        System.out.println(name + "," + c);
+        log.info("isLoaded:{},{},",name ,c);
       }
       if (c != null) {
         return c;
@@ -48,15 +48,15 @@ public class HotSwapClassLoader extends URLClassLoader {
 
       // 如果是Hotswap类使用本类加载器
       if (hotSwapResolver.isHotSwapClass(name)) {
-        if (Diagnostic.isDebug()) {
-          log.info("isHotSwapClass:{}", name);
-        }
 
         /**
          * 使用 "本 ClassLoader" 加载类文件
          * 注意：super.loadClass(...) 会触发 parent 加载，绝对不能使用
          */
         c = super.findClass(name);
+        if (Diagnostic.isDebug()) {
+          log.info("findClass:{},{}", name,c != null);
+        }
 
         if (c != null) {
           if (resolve) {
@@ -67,7 +67,6 @@ public class HotSwapClassLoader extends URLClassLoader {
           }
           return c;
         }
-
         // throw new ClassNotFoundException(name); // TODO
       }
 

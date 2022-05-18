@@ -35,7 +35,7 @@ public class HotSwapUtils {
       if (hotSwapClassPrefix != null) {
         for (String prefix : hotSwapClassPrefix.split(",")) {
           if (isEmpty(prefix)) {
-            hotSwapResolver.addHotSwapClassPrefix(prefix);
+            HotSwapResolver.addHotSwapClassPrefix(prefix);
           }
         }
       }

@@ -35,8 +35,7 @@ public class HotSwapResolver {
    * 添加org.quartz.出现下面的错误
    * Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.quartz.Scheduler' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
    */
-  protected static String[] hotSwapClassPrefix = {}; 
-  
+  protected static String[] hotSwapClassPrefix = {};
 
   public HotSwapResolver(String[] classPathDirs) {
     // 不必判断 length == 0，因为在打包后的生产环境获取到的 length 可以为 0
@@ -128,12 +127,14 @@ public class HotSwapResolver {
    * 重要：在热加载过后，如果出现类型转换异常，找到无法转换的类
    *      调用本方法添加相关前缀即可解决
    */
-  public static synchronized void addHotSwapClassPrefix(String prefix) {
+  public static synchronized void addHotSwapClassPrefix(String... prefixs) {
     List<String> list = new ArrayList<>();
     for (String s : hotSwapClassPrefix) {
       list.add(s);
     }
-    list.add(prefix.trim());
+    for (String prefix : prefixs) {
+      list.add(prefix.trim());
+    }
     hotSwapClassPrefix = list.toArray(new String[list.size()]);
   }
 }
