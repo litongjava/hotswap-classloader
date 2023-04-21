@@ -35,7 +35,7 @@ public class HotSwapClassLoader extends URLClassLoader {
       // First, check if the class has already been loaded
       Class<?> c = findLoadedClass(name);
       if (Diagnostic.isDebug()) {
-        log.info("isLoaded:{},{},",name ,c);
+        log.info("isLoaded:{},{},", name, c);
       }
       if (c != null) {
         return c;
@@ -55,7 +55,7 @@ public class HotSwapClassLoader extends URLClassLoader {
          */
         c = super.findClass(name);
         if (Diagnostic.isDebug()) {
-          log.info("findClass:{},{}", name,c != null);
+          log.info("findClass:{},{}", name, c != null);
         }
 
         if (c != null) {

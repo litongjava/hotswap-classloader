@@ -11,7 +11,7 @@ public class HotSwapResolver {
 
   protected String[] classPathDirs;
 
-  protected String[] systemClassPrefix = { "java.", "javax.", "sun.", // 支持 IDEA
+  protected static String[] systemClassPrefix = { "java.", "javax.", "sun.", // 支持 IDEA
       "com.sun.",
       // "jdk.",
       // "org.xml.",
@@ -112,12 +112,15 @@ public class HotSwapResolver {
   /**
    * 添加系统类前缀，系统类由系统类加载器进行加载
    */
-  public synchronized void addSystemClassPrefix(String prefix) {
+  public static synchronized void addSystemClassPrefix(String... prefixs) {
     List<String> list = new ArrayList<>();
     for (String s : systemClassPrefix) {
       list.add(s);
     }
-    list.add(prefix.trim());
+    for (String prefix : prefixs) {
+      list.add(prefix.trim());
+    }
+    
     systemClassPrefix = list.toArray(new String[list.size()]);
   }
 
