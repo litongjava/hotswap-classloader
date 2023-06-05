@@ -24,7 +24,7 @@ JRebel
 <dependency>
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
-  <version>1.0.9</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 添加配置文件  
