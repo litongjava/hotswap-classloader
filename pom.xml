@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
-  <version>1.0.9</version>
+  <version>1.1.0</version>
   <packaging>jar</packaging>
   <name>hotswap-classloader</name>
   <description>spring-boot开发者福音,修改java文件后按Ctrl+S可在1s内生效,省去手动重启spring-boot的时间</description>
