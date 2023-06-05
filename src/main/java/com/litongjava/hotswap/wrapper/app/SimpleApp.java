@@ -25,34 +25,36 @@ public class SimpleApp {
       e.printStackTrace();
     }
 
+    RestartServer restartServer = new RestartServer() {
+
+      @Override
+      public boolean isStarted() {
+        return true;
+      }
+
+      @Override
+      public void restart() {
+        System.err.println("loading");
+        long start = System.currentTimeMillis();
+
+        // 获取一个新的ClassLoader
+        ClassLoader hotSwapClassLoader = HotSwapUtils.newClassLoader();
+        // 绑定的线程上
+        Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
+        try {
+          run(clazzName, methodName, hotSwapClassLoader);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException
+                 | InvocationTargetException e) {
+          e.printStackTrace();
+        }
+        System.err.println("Loading complete in " + getTimeSpent(start) + " seconds (^_^)\n");
+      }
+
+    };
+
     if (hotSwapWatcher == null) {
       // 使用反射执行下面的代码
-      hotSwapWatcher = new HotSwapWatcher(new RestartServer() {
-
-        @Override
-        public boolean isStarted() {
-          return true;
-        }
-
-        @Override
-        public void restart() {
-          System.err.println("loading");
-          long start = System.currentTimeMillis();
-
-          // 获取一个新的ClassLoader
-          ClassLoader hotSwapClassLoader = HotSwapUtils.newClassLoader();
-
-          Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
-          try {
-            run(clazzName,methodName,hotSwapClassLoader);
-          } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException
-              | InvocationTargetException e) {
-            e.printStackTrace();
-          }
-          System.err.println("Loading complete in " + getTimeSpent(start) + " seconds (^_^)\n");
-        }
-
-      });
+      hotSwapWatcher = new HotSwapWatcher(restartServer);
       hotSwapWatcher.start();
     }
 
@@ -70,5 +72,6 @@ public class SimpleApp {
   protected static String getTimeSpent(long startTime) {
     float timeSpent = (System.currentTimeMillis() - startTime) / 1000F;
     return decimalFormat.format(timeSpent);
+    //观看
   }
 }

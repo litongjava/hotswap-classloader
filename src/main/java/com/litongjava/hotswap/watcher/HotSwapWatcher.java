@@ -76,7 +76,7 @@ public class HotSwapWatcher extends Thread {
   }
 
   private void buildDirs(File file, Set<String> watchingDirSet) {
-    if (file.isDirectory()) {
+    if (file.isDirectory() && !file.getName().contains("META-INF")) {
       watchingDirSet.add(file.getPath());
 
       File[] fileList = file.listFiles();
@@ -113,6 +113,9 @@ public class HotSwapWatcher extends Thread {
     executorService.scheduleAtFixedRate(() -> {
       watch(watcher);
     }, 0, 500, TimeUnit.MILLISECONDS);
+//    while(running) {
+//    	watch(watcher);
+//    }
 
   }
 
