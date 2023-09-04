@@ -124,7 +124,8 @@ public class HotSwapWatcher extends Thread {
       // watchKey = watcher.poll(watchingInterval, TimeUnit.MILLISECONDS); //
       // watcher.take(); 阻塞等待
       // 比较两种方式的灵敏性，或许 take() 方法更好，起码资源占用少，测试 windows 机器上的响应
-      watchKey = watcher.poll();
+//      watchKey = watcher.poll();
+      watchKey = watcher.take();
     } catch (Throwable e) { // 控制台 ctrl + c 退出 JVM 时也将抛出异常
       running = false;
       if (e instanceof InterruptedException) {
