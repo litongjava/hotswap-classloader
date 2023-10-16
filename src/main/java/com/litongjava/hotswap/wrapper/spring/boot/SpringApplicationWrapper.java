@@ -28,12 +28,26 @@ public class SpringApplicationWrapper {
    */
   public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
     String mode = null;
-    try {
-      Properties properties = PropertiesLoaderUtils.loadAllProperties("config.properties");
-      mode = properties.getProperty("mode");
-    } catch (IOException e) {
-      e.printStackTrace();
+    // 检查命令行参数中是否包含 --mode=dev
+    for (String arg : args) {
+      if ("--mode=dev".equals(arg)) {
+        mode = "dev";
+        break;
+      }
     }
+
+    if (mode == null) {
+      try {
+        Properties properties = PropertiesLoaderUtils.loadAllProperties("config.properties");
+        if (properties != null) {
+          mode = properties.getProperty("mode");
+        }
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
     return run(primarySource, args, "dev".equals(mode));
   }
 
