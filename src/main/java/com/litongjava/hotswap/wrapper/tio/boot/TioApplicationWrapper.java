@@ -27,8 +27,9 @@ public class TioApplicationWrapper {
     String mode = null;
     // 检查命令行参数中是否包含 --mode=dev
     for (String arg : args) {
-      if ("--mode=dev".equals(arg)) {
-        mode = "dev";
+      String[] split = arg.split("=");
+      if (split[0].equals("--mode")) {
+        mode = split[1];
         break;
       }
     }
