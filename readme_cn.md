@@ -25,7 +25,7 @@
 <dependency>
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.7</version>
 </dependency>
 ```
 

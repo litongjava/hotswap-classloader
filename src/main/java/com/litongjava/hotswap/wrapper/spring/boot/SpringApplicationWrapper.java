@@ -91,7 +91,6 @@ public class SpringApplicationWrapper {
     ClassLoader hotSwapClassLoader = HotSwapUtils.getClassLoader();
     log.info("hotSwapClassLoader:{}", hotSwapClassLoader);
 
-    // 第一次启动不需要使用自定义的类加载器,使用默认的类加载器即可
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
     ConfigurableApplicationContext context = SpringApplication.run(primarySource, args);
     SpringBootArgument.init(primarySource, args, context, true);

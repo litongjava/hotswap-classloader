@@ -50,6 +50,18 @@ public class SimpleApp {
         System.err.println("Loading complete in " + getTimeSpent(start) + " seconds (^_^)\n");
       }
 
+      @Override
+      public void start(Class<?> primarySource, String[] args) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void stop() {
+        // TODO Auto-generated method stub
+        
+      }
+
     };
 
     if (hotSwapWatcher == null) {

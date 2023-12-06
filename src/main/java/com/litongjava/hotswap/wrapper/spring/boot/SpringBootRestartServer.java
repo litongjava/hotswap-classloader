@@ -19,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SpringBootRestartServer implements RestartServer {
 
-  protected DecimalFormat decimalFormat = new DecimalFormat("#.#");
-
   public boolean isStarted() {
     return SpringBootArgument.getContext().isRunning();
   }
@@ -70,13 +68,21 @@ public class SpringBootRestartServer implements RestartServer {
     // 启动SpringApplication
     ConfigurableApplicationContext context = SpringApplication.run(clazz, args);
     SpringBootArgument.setContext(context);
-
-    System.err.println("Loading complete in " + getTimeSpent(start) + " seconds (^_^)\n");
+    long end = System.currentTimeMillis();
+    System.err.println("Loading complete in " + (end-start) + " ms (^_^)\n");
   }
 
-  protected String getTimeSpent(long startTime) {
-    float timeSpent = (System.currentTimeMillis() - startTime) / 1000F;
-    return decimalFormat.format(timeSpent);
+
+
+  @Override
+  public void start(Class<?> primarySource, String[] args) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void stop() {
+    
   }
 
 }

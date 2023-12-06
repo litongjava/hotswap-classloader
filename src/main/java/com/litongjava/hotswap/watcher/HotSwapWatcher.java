@@ -143,14 +143,14 @@ public class HotSwapWatcher extends Thread {
   private void process(WatchService watcher) {
     List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
     if (Diagnostic.isDebug()) {
-      log.info("文件修改个数:{}", watchEvents.size());
+      log.info("Number of file modifications:{}", watchEvents.size());
     }
     for (WatchEvent<?> event : watchEvents) {
       Kind<?> kind = event.kind();
       String fileName = event.context().toString();
 
       if (Diagnostic.isDebug()) {
-        log.info("{} 检测到文件修改 {},{}", watcher.toString(), kind.toString(), fileName);
+        log.info("{} modifications {},{}", watcher.toString(), kind.toString(), fileName);
       }
 
       if (kind == StandardWatchEventKinds.OVERFLOW) {

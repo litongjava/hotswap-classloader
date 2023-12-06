@@ -9,5 +9,9 @@ public interface RestartServer {
   public boolean isStarted();
 
   public void restart();
+
+  public void start(Class<?> primarySource,String[] args);
+  
+  public void stop();
   
 }

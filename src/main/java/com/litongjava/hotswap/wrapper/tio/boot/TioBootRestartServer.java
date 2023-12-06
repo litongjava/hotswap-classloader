@@ -1,7 +1,5 @@
 package com.litongjava.hotswap.wrapper.tio.boot;
 
-import java.text.DecimalFormat;
-
 import com.litongjava.hotswap.debug.Diagnostic;
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.server.RestartServer;
@@ -17,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class TioBootRestartServer implements RestartServer {
-
-  protected DecimalFormat decimalFormat = new DecimalFormat("#.#");
 
   public boolean isStarted() {
     return TioBootArgument.getContext().isRunning();
@@ -42,16 +38,21 @@ public class TioBootRestartServer implements RestartServer {
     // 在启动新的spring-boot应用之前必须设置上下文加载器
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
 
-    // 启动SpringApplication
+    // 启动Application
     Context context = TioApplication.run(clazz, args);
     TioBootArgument.setContext(context);
-
-    System.err.println("Loading complete in " + getTimeSpent(start) + " seconds (^_^)\n");
+    long end = System.currentTimeMillis();
+    System.err.println("Loading complete in " + (end - start) + " ms (^_^)\n");
   }
 
-  protected String getTimeSpent(long startTime) {
-    float timeSpent = (System.currentTimeMillis() - startTime) / 1000F;
-    return decimalFormat.format(timeSpent);
+  @Override
+  public void start(Class<?> primarySource, String[] args) {
+
+  }
+
+  @Override
+  public void stop() {
+
   }
 
 }
