@@ -60,18 +60,104 @@ Note: `SpringApplicationWrapper` reads the `mode` key value from the `config.pro
 Upon completing the above steps, you can refer to this project for integration:  
 [View the integrated project](https://gitee.com/ppnt/java-ee-spring-boot-study/tree/master/maven/java-ee-spring-boot-2.1.6-study/java-ee-spring-boot-2.1.6-hello)
 
-### 2.2 Support for IDEA
+### 2.2 Integration with other framework
+Calls ForkApp.run in its own startup
+```
+//params: startup class, startup parameters, hot load, restart class
+ForkApp.run(SklearnWebApp.class, args, true, new SelfRestart());
+```
+For example
+```
+package com.litongjava.tio.boot.djl;
 
-#### 2.2.1 Version Information
+import org.tio.utils.jfinal.P;
+
+import com.litongjava.hotswap.wrapper.forkapp.ForkApp;
+
+public class SklearnWebApp {
+
+  public static void main(String[] args) throws Exception {
+    long start = System.currentTimeMillis();
+    // Initialize the server and start the server
+    P.use("app.properties");
+//     Diagnostic.setDebug(true);
+//    TioApplicationWrapper.run(SklearnWebApp.class, args);
+     ForkApp.run(SklearnWebApp.class, args, true, new SelfRestart());
+    long end = System.currentTimeMillis();
+    System.out.println("started:" + (end - start) + "(ms)");
+  }
+}
+```
+Write SelfRestart to implement the methods in RestartServer
+
+```
+package com.litongjava.tio.boot.djl;
+
+import com.litongjava.hotswap.debug.Diagnostic;
+import com.litongjava.hotswap.kit.HotSwapUtils;
+import com.litongjava.hotswap.server.RestartServer;
+import com.litongjava.hotswap.wrapper.forkapp.ForkAppBootArgument;
+import com.litongjava.tio.boot.TioApplication;
+import com.litongjava.tio.boot.context.Context;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class SelfRestart implements RestartServer {
+  public boolean isStarted() {
+    return ForkAppBootArgument.getContext().isRunning();
+  }
+
+  public void restart() {
+    System.err.println("loading");
+    long start = System.currentTimeMillis();
+
+    stop();
+    // get a new ClassLoader
+    ClassLoader hotSwapClassLoader = HotSwapUtils.newClassLoader();
+    if (Diagnostic.isDebug()) {
+      log.info("new classLoader:{}", hotSwapClassLoader);
+    }
+
+    // Set the context loader
+    Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
+
+    // get startup class and args
+    Class<?> clazz = ForkAppBootArgument.getBootClazz();
+    String[] args = ForkAppBootArgument.getArgs();
+    // start 
+    start(clazz, args);
+    long end = System.currentTimeMillis();
+    System.err.println("Loading complete in " + (end - start) + " ms (^_^)\n");
+  }
+
+  @Override
+  public void start(Class<?> primarySource, String[] args) {
+    Context context = TioApplication.run(primarySource, args);
+    ForkAppBootArgument.setContext(context);
+  }
+
+  @Override
+  public void stop() {
+    ForkAppBootArgument.getContext().close();
+  }
+}
+```
+## 3.Support for IDE
+
+### 3.1 Support for IDEA
+
+### 3.2 Support for IDEA 2021.3.3
+#### 3.2.1 Version Information
 IDEA version is as follows:  
 ![](readme_files/1.jpg)
 
-#### 2.2.2 Why Hot Reload Configuration is Needed
+#### 3.2.2 Why Hot Reload Configuration is Needed
 HotSwapWatcher mainly listens to modifications of class files under `target/classes` to trigger hot reloading. However, by default in IDEA, there is no automatic compilation, causing no changes to the files under `target/classes`. There are two solutions:
 1. Use the Ctrl + F9 shortcut to trigger compilation. (Test failed in IntelliJ IDEA 2019.3.3 (Ultimate Edition))
 2. Configure IDEA to enable automatic compilation, similar to eclipse.
 
-#### 2.2.3 IDEA Hot Reload Settings
+#### 3.2.3 IDEA Hot Reload Settings
 
 1. **Automatically Build Project**  
    Search for "compiler" in settings, then check "build project automatically".  
@@ -101,7 +187,7 @@ After completing the above settings, modifying a file and saving it in IDEA will
 
 **Note**: There might be an issue when a package contains only one `.java` file. For more details, please check [here](https://jfinal.com/share/2436).
 
-### 2.3 Support for spring-boot-maven-plugin
+### 3.3 Support for spring-boot-maven-plugin
 
 If you aim to start the spring-boot project from the command line using `mvn spring-boot:run`, the default class loader is `plexus-classworlds`. To use this class loader, you need to follow these steps:
 
@@ -126,20 +212,20 @@ If you aim to start the spring-boot project from the command line using `mvn spr
 mvn spring-boot:run
 ```
 
-## 3. Demonstrative Screenshots of Usage
+## 4. Demonstrative Screenshots of Usage
 
-### 3.1 Eclipse Testing Results
+### 4.1 Eclipse Testing Results
 After starting spring-boot, adding a method to the controller, and pressing Ctrl+S to save, the HotSwapClassloader detects file changes and automatically reloads the code. This process is completed in approximately 0.8 seconds.
 
 ![Eclipse Testing Results](doc/images/hotswap-classloader-spring-boot-elipse-test.gif)
 
-### 3.2 IDEA Testing Results
+### 4.2 IDEA Testing Results
 
 After starting spring-boot, adding a method to the controller, and pressing Ctrl+S to save, the HotSwapClassloader detects the file changes and automatically reloads the code. However, in IDEA, due to a compilation delay of about 10 seconds, the entire reloading process takes approximately 10.8 seconds.
 
 ![IDEA Testing Results](doc/images/hotswap-classloader-spring-boot-idea-test.gif)
 
-### 3.3 Command Line Testing Results
+### 4.3 Command Line Testing Results
 
 When starting the project from the command line using `mvn spring-boot:run`, you can modify the code in eclipse or IDEA for testing. This test is based on a large project. A regular startup takes 9.5 seconds, while hot reloading takes 3.4 seconds.
 

@@ -60,18 +60,103 @@ public class Application {
 完成以上步骤后，你可以参考此工程进行整合：  
 [查看整合后的工程](https://gitee.com/ppnt/java-ee-spring-boot-study/tree/master/maven/java-ee-spring-boot-2.1.6-study/java-ee-spring-boot-2.1.6-hello)
 
-### 2.2 IDEA 的支持
+### 2.2 整合其他外部框架
+在自己的启动了中调用ForkApp.run
+```
+//参数 框架启动类,框架启动参数,是否启用热加载,重启类
+ForkApp.run(SklearnWebApp.class, args, true, new SelfRestart());
+```
+示例
+```
+package com.litongjava.tio.boot.djl;
 
-#### 2.2.1 版本信息
+import org.tio.utils.jfinal.P;
+
+import com.litongjava.hotswap.wrapper.forkapp.ForkApp;
+
+public class SklearnWebApp {
+
+  public static void main(String[] args) throws Exception {
+    long start = System.currentTimeMillis();
+    // 初始化服务器并启动服务器
+    P.use("app.properties");
+//     Diagnostic.setDebug(true);
+//    TioApplicationWrapper.run(SklearnWebApp.class, args);
+     ForkApp.run(SklearnWebApp.class, args, true, new SelfRestart());
+    long end = System.currentTimeMillis();
+    System.out.println("started:" + (end - start) + "(ms)");
+  }
+}
+```
+编写SelfRestart实现RestartServer中的方法
+
+```
+package com.litongjava.tio.boot.djl;
+
+import com.litongjava.hotswap.debug.Diagnostic;
+import com.litongjava.hotswap.kit.HotSwapUtils;
+import com.litongjava.hotswap.server.RestartServer;
+import com.litongjava.hotswap.wrapper.forkapp.ForkAppBootArgument;
+import com.litongjava.tio.boot.TioApplication;
+import com.litongjava.tio.boot.context.Context;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class SelfRestart implements RestartServer {
+  public boolean isStarted() {
+    return ForkAppBootArgument.getContext().isRunning();
+  }
+
+  public void restart() {
+    System.err.println("loading");
+    long start = System.currentTimeMillis();
+
+    stop();
+    // 获取一个新的ClassLoader
+    ClassLoader hotSwapClassLoader = HotSwapUtils.newClassLoader();
+    if (Diagnostic.isDebug()) {
+      log.info("new classLoader:{}", hotSwapClassLoader);
+    }
+
+    // 在启动新的spring-boot应用之前必须设置上下文加载器
+    Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
+
+    // 获取启动类和启动参数
+    Class<?> clazz = ForkAppBootArgument.getBootClazz();
+    String[] args = ForkAppBootArgument.getArgs();
+    // 启动Application
+    start(clazz, args);
+    long end = System.currentTimeMillis();
+    System.err.println("Loading complete in " + (end - start) + " ms (^_^)\n");
+  }
+
+  @Override
+  public void start(Class<?> primarySource, String[] args) {
+    Context context = TioApplication.run(primarySource, args);
+    ForkAppBootArgument.setContext(context);
+  }
+
+  @Override
+  public void stop() {
+    ForkAppBootArgument.getContext().close();
+  }
+}
+```
+## 3.开发工具支持
+### 3.1 IDEA 的支持
+
+### 3.2 IDEA 2021.1.3 的支持
+#### 3.2.1 版本信息
 IDEA 版本如下：  
 ![](readme_files/1.jpg)
 
-#### 2.2.2 为何需要热加载配置
+#### 3.2.2 为何需要热加载配置
 HotSwapWatcher 主要是监听 `target/classes` 下的 class 文件修改来触发热加载。但在 IDEA 中，默认情况下不会自动编译，导致 `target/classes` 下的文件没有变化。有两种解决办法：
 1. 使用快捷键 Ctrl + F9 触发编译。（在 IntelliJ IDEA 2019.3.3 (Ultimate Edition) 中测试失败）
 2. 配置 IDEA 开启自动编译，类似 eclipse。
 
-#### 2.2.3 IDEA 的热加载设置
+#### 3.2.3 IDEA 的热加载设置
 
 1. **自动构建项目**  
    在 settings 中搜索 "compiler"，然后勾选 "build project automatically"。  
@@ -101,7 +186,7 @@ HotSwapWatcher 主要是监听 `target/classes` 下的 class 文件修改来触�
 
 **注意**：当一个包中只有一个 `.java` 文件时，可能会出现问题。详情请查看 [这里](https://jfinal.com/share/2436)。
 
-### 2.3 spring-boot-maven-plugin 支持
+### 3.3 spring-boot-maven-plugin 支持
 
 如果你想在命令行使用 `mvn spring-boot:run` 启动 spring-boot 项目，默认的类加载器是 `plexus-classworlds`。要使用这个类加载器，你需要按照以下步骤配置：
 
@@ -123,20 +208,20 @@ HotSwapWatcher 主要是监听 `target/classes` 下的 class 文件修改来触�
 
 4. 使用 `mvn spring-boot:run` 启动项目。
 
-## 3. 使用效果截图
+## 4. 使用效果截图
 
-### 3.1 Eclipse 测试效果
+### 4.1 Eclipse 测试效果
 在 spring-boot 启动后，向 controller 添加一个方法，按 Ctrl+S 保存。HotSwapClassloader 会检测到文件变化，自动重新加载代码，并在大约 0.8 秒内生效。
 
 ![Eclipse 测试效果](doc/images/hotswap-classloader-spring-boot-elipse-test.gif)
 
-### 3.2 IDEA 测试效果
+### 4.2 IDEA 测试效果
 
 在 spring-boot 启动后，向 controller 添加一个方法，按 Ctrl+S 保存。HotSwapClassloader 会检测到文件变化，并自动重新加载代码。但在 IDEA 中，由于编译有约 10 秒的延迟，整个加载过程需要大约 10.8 秒才能完成。
 
 ![IDEA 测试效果](doc/images/hotswap-classloader-spring-boot-idea-test.gif)
 
-### 3.3 命令行测试效果
+### 4.3 命令行测试效果
 
 在命令行使用 `mvn spring-boot:run` 启动项目后，你可以在 eclipse 或 IDEA 中修改代码进行测试。本测试是基于一个大型项目，正常启动需要 9.5 秒，而热加载则需要 3.4 秒。
 
