@@ -1,11 +1,10 @@
 package com.litongjava.hotswap.wrapper.tio.boot;
 
-import org.tio.utils.jfinal.P;
-
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.watcher.HotSwapWatcher;
 import com.litongjava.tio.boot.TioApplication;
 import com.litongjava.tio.boot.context.Context;
+import com.litongjava.tio.utils.jfinal.P;
 
 import lombok.extern.slf4j.Slf4j;
 
