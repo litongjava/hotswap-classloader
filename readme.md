@@ -207,6 +207,11 @@ If you aim to start the spring-boot project from the command line using `mvn spr
 </plugin>
 ```
 
+### 1.4 Eclipse
+No setup required, natively supported. Modify a Java file and it will be loaded automatically after saving. Development experience is better than IDEA
+### 1.5 Visual Studio Code
+No setup required, natively supported. Modify a Java file and it will be loaded automatically after saving. Development experience is better than IDEA
+
 4. Start the project using:
 ```
 mvn spring-boot:run

@@ -208,6 +208,10 @@ HotSwapWatcher 主要是监听 `target/classes` 下的 class 文件修改来触�
 
 4. 使用 `mvn spring-boot:run` 启动项目。
 
+### 1.4 Eclipse
+不需要设置,原生支持.修改一个Java文件保存后会自动加载.开发体验优于IDEA
+### 1.5 Visual Studio Code
+不需要设置,原生支持.修改一个Java文件保存后会自动加载.开发体验优于IDEA
 ## 4. 使用效果截图
 
 ### 4.1 Eclipse 测试效果
