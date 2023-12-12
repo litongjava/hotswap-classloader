@@ -34,7 +34,10 @@ public class TioApplicationWrapper {
     }
 
     if (mode == null) {
-      mode = P.get("mode");
+      if (P.isLoad()) {
+        mode = P.get("mode");
+      }
+
     }
 
     return run(primarySource, args, "dev".equals(mode));
@@ -81,7 +84,7 @@ public class TioApplicationWrapper {
     log.info("hotSwapClassLoader:{}", hotSwapClassLoader);
 
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
-    //run
+    // run
     Context context = TioApplication.run(primarySource, args);
     TioBootArgument.init(primarySource, args, context, true);
 
