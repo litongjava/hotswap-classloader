@@ -1,6 +1,8 @@
 package com.litongjava.hotswap.wrapper.tio.boot;
 
 import com.litongjava.tio.boot.context.Context;
+import com.litongjava.tio.server.intf.ServerAioHandler;
+import com.litongjava.tio.server.intf.ServerAioListener;
 
 /**
  * @author create by ping-e-lee on 2021年6月23日 上午8:48:16 
@@ -9,11 +11,28 @@ import com.litongjava.tio.boot.context.Context;
  */
 public class TioBootArgument {
 
+  private static Class<?>[] BootClazz;
+  private static ServerAioHandler handler;
+  private static ServerAioListener listener;
   private static String[] args;
-  private static Class<?> BootClazz;
   private static Context context;
   private static Boolean isDev = false;
 
+  public static void setBootClazz(Class<?>[] clazz) {
+    TioBootArgument.BootClazz = clazz;
+  }
+
+  public static Class<?>[] getBootClazz() {
+    return BootClazz;
+  }
+  public static ServerAioHandler getHandler() {
+    return handler;
+  }
+  
+  public static ServerAioListener getListener() {
+    return listener;
+  }
+  
   public static void setArgs(String[] args) {
     TioBootArgument.args = args;
   }
@@ -22,13 +41,7 @@ public class TioBootArgument {
     return TioBootArgument.args;
   }
 
-  public static void setBootClazz(Class<?> clazz) {
-    TioBootArgument.BootClazz = clazz;
-  }
 
-  public static Class<?> getBootClazz() {
-    return BootClazz;
-  }
 
   public static void setContext(Context context) {
     TioBootArgument.context = context;
@@ -42,11 +55,22 @@ public class TioBootArgument {
     return TioBootArgument.isDev;
   }
 
-  public static void init(Class<?> clazz, String[] args, Context context, Boolean isDev) {
+  public static void init(Class<?>[] clazz, String[] args, Context context, Boolean isDev) {
     TioBootArgument.args = args;
     TioBootArgument.BootClazz = clazz;
     TioBootArgument.context = context;
     TioBootArgument.isDev = isDev;
+  }
+
+  public static void init(Class<?>[] primarySources, ServerAioHandler handler, ServerAioListener listener,
+      String[] args, Context context, boolean isDev) {
+    TioBootArgument.BootClazz = primarySources;
+    TioBootArgument.handler = handler;
+    TioBootArgument.listener = listener;
+    TioBootArgument.args = args;
+    TioBootArgument.context = context;
+    TioBootArgument.isDev = isDev;
+
   }
 
 }

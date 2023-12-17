@@ -2,8 +2,12 @@ package com.litongjava.hotswap.wrapper.tio.boot;
 
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.watcher.HotSwapWatcher;
+import com.litongjava.jfinal.aop.Aop;
 import com.litongjava.tio.boot.TioApplication;
 import com.litongjava.tio.boot.context.Context;
+import com.litongjava.tio.boot.context.TioApplicationContext;
+import com.litongjava.tio.server.intf.ServerAioHandler;
+import com.litongjava.tio.server.intf.ServerAioListener;
 import com.litongjava.tio.utils.jfinal.P;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +21,22 @@ import lombok.extern.slf4j.Slf4j;
 public class TioApplicationWrapper {
   protected static volatile HotSwapWatcher hotSwapWatcher;
 
-  /**
-   * 整合spring-boot 1.2.x
-   * 读取配置文件 environment.properties
-   * @return
-   */
   public static Context run(Class<?> primarySource, String... args) {
+    return run(new Class<?>[] { primarySource }, null, null, args);
+  }
+
+  public static Context run(Class<?> primarySource, ServerAioHandler handler, String... args) {
+    return run(new Class<?>[] { primarySource }, handler, null, args);
+  }
+
+  public static Context run(Class<?> primarySource, ServerAioHandler handler, ServerAioListener listener,
+      String... args) {
+    return run(new Class<?>[] { primarySource }, handler, listener, args);
+  }
+
+  private static Context run(Class<?>[] primarySources, ServerAioHandler handler, ServerAioListener listener,
+      String[] args) {
+
     String mode = null;
     // 检查命令行参数中是否包含 --mode=dev
     for (String arg : args) {
@@ -39,8 +53,7 @@ public class TioApplicationWrapper {
       }
 
     }
-
-    return run(primarySource, args, "dev".equals(mode));
+    return run(primarySources, handler, listener, args, "dev".equals(mode));
   }
 
   /**
@@ -52,11 +65,12 @@ public class TioApplicationWrapper {
    * @param args
    * 
    */
-  public static Context run(Class<?> primarySource, String[] args, Boolean isDev) {
+  public static Context run(Class<?>[] primarySources, ServerAioHandler handler, ServerAioListener listener,
+      String[] args, Boolean isDev) {
     if (isDev) {
-      return runDev(primarySource, args);
+      return runDev(primarySources, handler, listener, args);
     } else {
-      return TioApplication.run(primarySource, args);
+      return TioApplication.run(primarySources, handler, listener, args);
     }
   }
 
@@ -68,7 +82,13 @@ public class TioApplicationWrapper {
    * @return
    */
   public static Context run(Boolean isDev, Class<?> primarySource, String... args) {
-    return run(primarySource, args, isDev);
+    return run(new Class<?>[] { primarySource }, null, null, args, isDev);
+  }
+
+  public static Context run(Boolean isDev, Class<?>[] primarySources, String[] args) {
+    Context context = Aop.get(TioApplicationContext.class);
+    return context.run(primarySources, args);
+
   }
 
   /**
@@ -78,15 +98,16 @@ public class TioApplicationWrapper {
    * @param isDev
    * @return
    */
-  private static Context runDev(Class<?> primarySource, String[] args) {
+  private static Context runDev(Class<?>[] primarySources, ServerAioHandler handler, ServerAioListener listener,
+      String[] args) {
     // 获取自定义的classLoalder
     ClassLoader hotSwapClassLoader = HotSwapUtils.getClassLoader();
     log.info("hotSwapClassLoader:{}", hotSwapClassLoader);
 
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
     // run
-    Context context = TioApplication.run(primarySource, args);
-    TioBootArgument.init(primarySource, args, context, true);
+    Context context = TioApplication.run(primarySources, handler, listener, args);
+    TioBootArgument.init(primarySources,handler, listener,args, context, true);
 
     if (hotSwapWatcher == null) {
       // 使用反射执行下面的代码
