@@ -5,8 +5,6 @@ import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.server.RestartServer;
 import com.litongjava.tio.boot.TioApplication;
 import com.litongjava.tio.boot.context.Context;
-import com.litongjava.tio.server.intf.ServerAioHandler;
-import com.litongjava.tio.server.intf.ServerAioListener;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,34 +17,33 @@ import lombok.extern.slf4j.Slf4j;
 public class TioBootRestartServer implements RestartServer {
 
   public boolean isStarted() {
-    return TioBootArgument.getContext().isRunning();
+    return TioBootArgument.context.isRunning();
   }
 
   public void restart() {
     System.err.println("loading");
     long start = System.currentTimeMillis();
     // 关闭,同时也等于关闭web中间件,因为web中间件在spring的容器中
-    TioBootArgument.getContext().close();
+    TioBootArgument.context.close();
     // 获取启动类和启动参数
-    Class<?>[] primarySources = TioBootArgument.getBootClazz();
-    ServerAioHandler handler = TioBootArgument.getHandler();
-    ServerAioListener listener = TioBootArgument.getListener();
-    String[] args = TioBootArgument.getArgs();
+    Class<?>[] primarySources = TioBootArgument.primarySources;
+    String[] args = TioBootArgument.args;
 
     // 获取一个新的ClassLoader
     ClassLoader hotSwapClassLoader = HotSwapUtils.newClassLoader();
     if (Diagnostic.isDebug()) {
       log.info("new classLoader:{}", hotSwapClassLoader);
     }
-
     // 在启动新的spring-boot应用之前必须设置上下文加载器
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
 
     // 启动Application
-    Context context = TioApplication.run(primarySources, handler, listener, args);
-    TioBootArgument.setContext(context);
+    Context context = TioApplication.run(primarySources, args);
+    TioBootArgument.context = context;
+    // 再次将启动参数放到bean容器中
     long end = System.currentTimeMillis();
     System.err.println("Loading complete in " + (end - start) + " ms (^_^)\n");
+
   }
 
   @Override

@@ -71,6 +71,10 @@ public class HotSwapClassLoader extends URLClassLoader {
       }
 
       // 其他类使用父类加载器加载
+
+      if (Diagnostic.isDebug()) {
+        log.info("parent.loadClas:{},{}", parent.toString(), name);
+      }
       return parent.loadClass(name);
     }
   }

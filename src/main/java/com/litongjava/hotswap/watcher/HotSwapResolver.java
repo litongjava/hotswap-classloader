@@ -35,7 +35,20 @@ public class HotSwapResolver {
    * 添加org.quartz.出现下面的错误
    * Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.quartz.Scheduler' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
    */
-  protected static String[] hotSwapClassPrefix = {};
+  protected static String[] hotSwapClassPrefix = {
+      // 添加需要热加载的类
+      // "com.litongjava.jfinal.", // 支持litongjava-jfinal-aop
+
+      "net.sf.ehcache.", // 支持 ehcache，否则从 ehcache 中读取到的数据将出现类型转换异常
+      "redis.clients.", "org.nustaq.", // 支持 RedisPlugin
+      "org.quartz.", // 支持 quartz
+      "net.dreamlu." // 支持 JFinal-event 等出自 net.dreamlu 的插件
+  };
+  protected static String[] excludedHotSwapPrefixes = {
+      // 添加排除的信息
+      // "com.litongjava.jfinal.aop.annotation."// jfinal
+
+  };
 
   public HotSwapResolver(String[] classPathDirs) {
     // 不必判断 length == 0，因为在打包后的生产环境获取到的 length 可以为 0
@@ -70,6 +83,14 @@ public class HotSwapResolver {
    * 2：在 class path 目录下能找到的 .class 文件
    */
   public boolean isHotSwapClass(String className) {
+    // Check if the class is excluded from hot swapping
+    for (String excludedPrefix : excludedHotSwapPrefixes) {
+      if (className.startsWith(excludedPrefix)) {
+        return false;
+      }
+    }
+
+    // Check if the class matches hotSwapClassPrefix
     for (String s : hotSwapClassPrefix) {
       if (className.startsWith(s)) {
         return true;
@@ -120,7 +141,7 @@ public class HotSwapResolver {
     for (String prefix : prefixs) {
       list.add(prefix.trim());
     }
-    
+
     systemClassPrefix = list.toArray(new String[list.size()]);
   }
 
@@ -139,5 +160,22 @@ public class HotSwapResolver {
       list.add(prefix.trim());
     }
     hotSwapClassPrefix = list.toArray(new String[list.size()]);
+  }
+
+  /**
+   * Remove specified prefixes from the hotSwapClassPrefix.
+   * 
+   * @param prefixes Prefixes to be excluded from hot swapping.
+   */
+  public static synchronized void removeHotSwapClassPrefix(String... prefixes) {
+    List<String> list = new ArrayList<>();
+    for (String s : excludedHotSwapPrefixes) {
+      list.add(s);
+    }
+    for (String prefix : prefixes) {
+      list.add(prefix.trim());
+    }
+    excludedHotSwapPrefixes = list.toArray(new String[list.size()]);
+
   }
 }
