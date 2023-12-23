@@ -46,7 +46,8 @@ public class HotSwapResolver {
   };
   protected static String[] excludedHotSwapPrefixes = {
       // 添加排除的信息
-      // "com.litongjava.jfinal.aop.annotation."// jfinal
+      "com.litongjava.jfinal.aop.annotation.", // jfinal
+      "com.litongjava.tio.http.server.annotation."// tio-server
 
   };
 
