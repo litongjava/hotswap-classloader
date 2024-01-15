@@ -39,15 +39,15 @@ public class HotSwapResolver {
       // 添加需要热加载的类
       // "com.litongjava.jfinal.", // 支持litongjava-jfinal-aop
 
-      "net.sf.ehcache.", // 支持 ehcache，否则从 ehcache 中读取到的数据将出现类型转换异常
-      "redis.clients.", "org.nustaq.", // 支持 RedisPlugin
-      "org.quartz.", // 支持 quartz
-      "net.dreamlu." // 支持 JFinal-event 等出自 net.dreamlu 的插件
+      //"net.sf.ehcache.", // 支持 ehcache，否则从 ehcache 中读取到的数据将出现类型转换异常
+      //"redis.clients.", "org.nustaq.", // 支持 RedisPlugin
+      //"org.quartz.", // 支持 quartz
+      //"net.dreamlu." // 支持 JFinal-event 等出自 net.dreamlu 的插件
   };
   protected static String[] excludedHotSwapPrefixes = {
       // 添加排除的信息
-      "com.litongjava.jfinal.aop.annotation.", // jfinal
-      "com.litongjava.tio.http.server.annotation."// tio-server
+      //"com.litongjava.jfinal.aop.annotation.", // jfinal
+      //"com.litongjava.tio.http.server.annotation."// tio-server
 
   };
 
