@@ -71,9 +71,7 @@ public class TioApplicationWrapper {
 
     // 获取自定义的classLoalder
     ClassLoader hotSwapClassLoader = HotSwapUtils.getClassLoader();
-    if(log.isInfoEnabled()) {
-      log.info("hotSwapClassLoader:{}", hotSwapClassLoader);
-    }
+    log.info("new hotSwapClassLoader:{}", hotSwapClassLoader);
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
     
     // run
