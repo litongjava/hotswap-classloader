@@ -31,9 +31,7 @@ public class TioBootRestartServer implements RestartServer {
 
     // 获取一个新的ClassLoader
     ClassLoader hotSwapClassLoader = HotSwapUtils.newClassLoader();
-    if (Diagnostic.isDebug()) {
-      log.info("new classLoader:{}", hotSwapClassLoader);
-    }
+    log.info("new classLoader:{}", hotSwapClassLoader);
     // 在启动新的spring-boot应用之前必须设置上下文加载器
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
 
