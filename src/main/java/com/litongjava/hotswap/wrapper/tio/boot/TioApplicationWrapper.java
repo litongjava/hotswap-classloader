@@ -2,10 +2,9 @@ package com.litongjava.hotswap.wrapper.tio.boot;
 
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.watcher.HotSwapWatcher;
-import com.litongjava.jfinal.aop.Aop;
 import com.litongjava.tio.boot.TioApplication;
 import com.litongjava.tio.boot.context.Context;
-import com.litongjava.tio.boot.context.TioApplicationContext;
+import com.litongjava.tio.boot.context.TioBootConfiguration;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,8 +20,15 @@ public class TioApplicationWrapper {
     return run(new Class<?>[] { primarySource }, args);
   }
 
-  private static Context run(Class<?>[] primarySources, String[] args) {
+  public static Context run(Class<?> primarySource, TioBootConfiguration config, String[] args) {
+    return run(new Class<?>[] { primarySource }, config, args);
+  }
 
+  private static Context run(Class<?>[] primarySources, String[] args) {
+    return run(primarySources, null, args);
+  }
+
+  private static Context run(Class<?>[] primarySources, TioBootConfiguration config, String[] args) {
     String mode = null;
     // 检查命令行参数中是否包含 --mode=dev
     for (String arg : args) {
@@ -32,7 +38,7 @@ public class TioApplicationWrapper {
         break;
       }
     }
-    return run(primarySources, args, "dev".equals(mode));
+    return run(primarySources, args, config, "dev".equals(mode));
   }
 
   /**
@@ -42,43 +48,29 @@ public class TioApplicationWrapper {
    * 使用默认的加载
    * 
    */
-  public static Context run(Class<?>[] primarySources, String[] args, boolean isDev) {
+  public static Context run(Class<?>[] primarySources, String[] args, TioBootConfiguration config, boolean isDev) {
     if (isDev) {
-      return runDev(primarySources, args);
+      return runDev(primarySources, config, args);
     } else {
-      return TioApplication.run(primarySources, args);
+      return TioApplication.run(primarySources, config, args);
     }
-  }
-
-  /**
-   * run
-   * @param isDev
-   * @param primarySources
-   * @param args
-   * @return
-   */
-  public static Context run(Boolean isDev, Class<?>[] primarySources, String[] args) {
-    Context context = Aop.get(TioApplicationContext.class);
-    return context.run(primarySources, args);
-
   }
 
   /**
    * 在开发模式下运行,使用HotSwapClassloader和HotSwapWatch
    */
 
-  public static Context runDev(Class<?>[] primarySources, String[] args) {
+  public static Context runDev(Class<?>[] primarySources, TioBootConfiguration config, String[] args) {
 
     // 获取自定义的classLoalder
     ClassLoader hotSwapClassLoader = HotSwapUtils.getClassLoader();
     log.info("new hotSwapClassLoader:{}", hotSwapClassLoader);
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
-    
-    // run
-    Context context = TioApplication.run(primarySources, args);
-    TioBootArgument.init(primarySources, args,context, true);
 
-    
+    // run
+    Context context = TioApplication.run(primarySources, config, args);
+    TioBootArgument.init(primarySources, args, context, true);
+
     if (hotSwapWatcher == null) {
       // 使用反射执行下面的代码
       log.info("start hotSwapWatcher");
@@ -89,4 +81,5 @@ public class TioApplicationWrapper {
     return context;
 
   }
+
 }
