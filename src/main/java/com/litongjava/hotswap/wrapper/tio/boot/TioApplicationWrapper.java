@@ -69,7 +69,7 @@ public class TioApplicationWrapper {
 
     // run
     Context context = TioApplication.run(primarySources, config, args);
-    TioBootArgument.init(primarySources, args, context, true);
+    TioBootArgument.init(primarySources,config,args, context, true);
 
     if (hotSwapWatcher == null) {
       // 使用反射执行下面的代码

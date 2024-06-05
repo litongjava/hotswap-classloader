@@ -1,6 +1,5 @@
 package com.litongjava.hotswap.wrapper.tio.boot;
 
-import com.litongjava.hotswap.debug.Diagnostic;
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.server.RestartServer;
 import com.litongjava.tio.boot.TioApplication;
@@ -36,7 +35,13 @@ public class TioBootRestartServer implements RestartServer {
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
 
     // 启动Application
-    Context context = TioApplication.run(primarySources, args);
+    Context context = null;
+    if (TioBootArgument.config != null) {
+      context = TioApplication.run(primarySources, TioBootArgument.config, args);
+    } else {
+      context = TioApplication.run(primarySources, args);
+    }
+
     TioBootArgument.context = context;
     // 再次将启动参数放到bean容器中
     long end = System.currentTimeMillis();
