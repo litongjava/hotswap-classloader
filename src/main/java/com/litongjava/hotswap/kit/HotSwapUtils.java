@@ -1,5 +1,7 @@
 package com.litongjava.hotswap.kit;
 
+import java.net.URL;
+
 import com.litongjava.hotswap.debug.Diagnostic;
 import com.litongjava.hotswap.watcher.HotSwapResolver;
 
@@ -58,13 +60,23 @@ public class HotSwapUtils {
   }
 
   public static ClassLoader getClassLoader() {
-    //使用ClassLoaderKit()获取HotswapClassLoader
+    // 使用ClassLoaderKit()获取HotswapClassLoader
     return getClassLoaderKit().getClassLoader();
   }
 
   public static ClassLoader newClassLoader() {
     classLoaderKit = new ClassLoaderKit(HotSwapUtils.class.getClassLoader(), getHotSwapResolver());
     return classLoaderKit.getClassLoader();
+  }
+
+  /// app/xxx-1.0.jar!/BOOT-INF/classes
+  // file:/E:/xxx/target/classes/
+  public static boolean isDevelopmentEnvironment() {
+    URL resource = HotSwapUtils.class.getClassLoader().getResource("");
+    if (resource != null && resource.toString().endsWith("/target/classes/")) {
+      return true;
+    }
+    return false;
   }
 
 }

@@ -5,12 +5,14 @@ import com.litongjava.hotswap.watcher.HotSwapWatcher;
 import com.litongjava.tio.boot.TioApplication;
 import com.litongjava.tio.boot.context.Context;
 import com.litongjava.tio.boot.context.TioBootConfiguration;
+import com.litongjava.tio.constants.TioCoreConfigKeys;
+import com.litongjava.tio.utils.environment.EnvUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author create by ping-e-lee on 2021年6月23日 上午8:06:48 
- * @version 1.0 
+ * @author create by ping-e-lee on 2021年6月23日 上午8:06:48
+ * @version 1.0
  */
 @Slf4j
 public class TioApplicationWrapper {
@@ -38,13 +40,20 @@ public class TioApplicationWrapper {
         break;
       }
     }
-    return run(primarySources, args, config, "dev".equals(mode));
+
+    // 如果未指定 mode，检查是否有调试器连接
+    if (mode == null) {
+      if (HotSwapUtils.isDevelopmentEnvironment()) {
+        mode = "dev";
+      } else {
+        mode = "prod";
+      }
+    }
+    return run(primarySources, args, config, "dev".equalsIgnoreCase(mode));
   }
 
   /**
-   * 如果isDev=true
-   * 使用自定义的HostSwapClassLoader启动SpringApplication
-   * 如果isDev=false
+   * 如果isDev=true 使用自定义的HostSwapClassLoader启动SpringApplication 如果isDev=false
    * 使用默认的加载
    * 
    */
@@ -61,22 +70,21 @@ public class TioApplicationWrapper {
    */
 
   public static Context runDev(Class<?>[] primarySources, TioBootConfiguration config, String[] args) {
+    if (hotSwapWatcher == null) {
+      hotSwapWatcher = new HotSwapWatcher(new TioBootRestartServer());
+      log.info("start hotswap watcher:{}", hotSwapWatcher);
+      hotSwapWatcher.start();
+    }
 
+    EnvUtils.set(TioCoreConfigKeys.TIO_CORE_HOTSWAP_RELOAD, "true");
     // 获取自定义的classLoalder
     ClassLoader hotSwapClassLoader = HotSwapUtils.getClassLoader();
-    log.info("new hotSwapClassLoader:{}", hotSwapClassLoader);
+    log.info("new hotswap class loader:{}", hotSwapClassLoader);
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
 
     // run
     Context context = TioApplication.run(primarySources, config, args);
-    TioBootArgument.init(primarySources,config,args, context, true);
-
-    if (hotSwapWatcher == null) {
-      // 使用反射执行下面的代码
-      log.info("start hotSwapWatcher");
-      hotSwapWatcher = new HotSwapWatcher(new TioBootRestartServer());
-      hotSwapWatcher.start();
-    }
+    TioBootArgument.init(primarySources, config, args, context, true);
 
     return context;
 

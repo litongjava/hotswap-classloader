@@ -109,7 +109,8 @@ public class HotSwapWatcher extends Thread {
           StandardWatchEventKinds.ENTRY_MODIFY, StandardWatchEventKinds.ENTRY_CREATE);
     }
 
-    // 降低轮询频率：使用 WatchService 时，可以通过设置轮询频率来控制其对 CPU 的消耗，比如设置为每秒轮询一次，而不是每毫秒轮询一次。可以根据具体情况进行调整。
+    // 降低轮询频率：使用 WatchService 时，可以通过设置轮询频率来控制其对 CPU
+    // 的消耗，比如设置为每秒轮询一次，而不是每毫秒轮询一次。可以根据具体情况进行调整。
     executorService.scheduleAtFixedRate(() -> {
       watch(watcher);
     }, 0, 500, TimeUnit.MILLISECONDS);
@@ -150,7 +151,9 @@ public class HotSwapWatcher extends Thread {
       String fileName = event.context().toString();
 
       if (Diagnostic.isDebug()) {
-        log.info("{} modifications {},{}", watcher.toString(), kind.toString(), fileName);
+        log.info("{} event {},{}", watcher.toString(), kind.toString(), fileName);
+      } else {
+        log.info("watch event {},{}", kind.toString(), fileName);
       }
 
       if (kind == StandardWatchEventKinds.OVERFLOW) {
@@ -159,6 +162,7 @@ public class HotSwapWatcher extends Thread {
       if (fileName.endsWith(".class")) {
         boolean started = server.isStarted();
         if (started) {
+          log.info("restart server:{}", server);
           server.restart();
           resetWatchKey();
 
@@ -187,8 +191,7 @@ public class HotSwapWatcher extends Thread {
   /**
    * 添加关闭钩子在 JVM 退出时关闭 WatchService
    * 
-   * 注意：addShutdownHook 方式添加的回调在 kill -9 pid 强制退出 JVM 时不会被调用
-   *      kill 不带参数 -9 时才回调
+   * 注意：addShutdownHook 方式添加的回调在 kill -9 pid 强制退出 JVM 时不会被调用 kill 不带参数 -9 时才回调
    */
   protected void addShutdownHook(WatchService watcher) {
     Thread hook = new Thread(() -> {
