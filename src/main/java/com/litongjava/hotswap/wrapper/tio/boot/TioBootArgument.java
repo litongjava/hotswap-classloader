@@ -1,7 +1,7 @@
 package com.litongjava.hotswap.wrapper.tio.boot;
 
-import com.litongjava.tio.boot.context.Context;
-import com.litongjava.tio.boot.context.TioBootConfiguration;
+import com.litongjava.context.BootConfiguration;
+import com.litongjava.context.Context;
 
 /**
  * @author create by ping-e-lee on 2021年6月23日 上午8:48:16 
@@ -11,12 +11,12 @@ import com.litongjava.tio.boot.context.TioBootConfiguration;
 public class TioBootArgument {
 
   public static Class<?>[] primarySources;
-  public static TioBootConfiguration config;
+  public static BootConfiguration config;
   public static String[] args;
   public static Context context;
   public static boolean isDev = false;
 
-  public static void init(Class<?>[] primarySources, TioBootConfiguration config, String[] args, Context context,
+  public static void init(Class<?>[] primarySources, BootConfiguration config, String[] args, Context context,
       boolean isDev) {
     TioBootArgument.primarySources = primarySources;
     TioBootArgument.config = config;

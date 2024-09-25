@@ -1,10 +1,10 @@
 package com.litongjava.hotswap.wrapper.tio.boot;
 
+import com.litongjava.context.BootConfiguration;
+import com.litongjava.context.Context;
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.watcher.HotSwapWatcher;
 import com.litongjava.tio.boot.TioApplication;
-import com.litongjava.tio.boot.context.Context;
-import com.litongjava.tio.boot.context.TioBootConfiguration;
 import com.litongjava.tio.constants.TioCoreConfigKeys;
 import com.litongjava.tio.utils.environment.EnvUtils;
 
@@ -22,7 +22,7 @@ public class TioApplicationWrapper {
     return run(new Class<?>[] { primarySource }, args);
   }
 
-  public static Context run(Class<?> primarySource, TioBootConfiguration config, String[] args) {
+  public static Context run(Class<?> primarySource, BootConfiguration config, String[] args) {
     return run(new Class<?>[] { primarySource }, config, args);
   }
 
@@ -30,7 +30,7 @@ public class TioApplicationWrapper {
     return run(primarySources, null, args);
   }
 
-  private static Context run(Class<?>[] primarySources, TioBootConfiguration config, String[] args) {
+  private static Context run(Class<?>[] primarySources, BootConfiguration config, String[] args) {
     String mode = null;
     // 检查命令行参数中是否包含 --mode=dev
     for (String arg : args) {
@@ -57,7 +57,7 @@ public class TioApplicationWrapper {
    * 使用默认的加载
    * 
    */
-  public static Context run(Class<?>[] primarySources, String[] args, TioBootConfiguration config, boolean isDev) {
+  public static Context run(Class<?>[] primarySources, String[] args, BootConfiguration config, boolean isDev) {
     if (isDev) {
       return runDev(primarySources, config, args);
     } else {
@@ -69,7 +69,7 @@ public class TioApplicationWrapper {
    * 在开发模式下运行,使用HotSwapClassloader和HotSwapWatch
    */
 
-  public static Context runDev(Class<?>[] primarySources, TioBootConfiguration config, String[] args) {
+  public static Context runDev(Class<?>[] primarySources, BootConfiguration config, String[] args) {
     if (hotSwapWatcher == null) {
       hotSwapWatcher = new HotSwapWatcher(new TioBootRestartServer());
       log.info("start hotswap watcher:{}", hotSwapWatcher);
