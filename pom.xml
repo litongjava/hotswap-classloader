@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
-  <version>1.2.6</version>
+  <version>1.2.7</version>
   <packaging>jar</packaging>
   <name>hotswap-classloader</name>
   <description>fast java dynamic classloader , support tio-boot, spring-boot , etc.</description>
@@ -28,6 +28,12 @@
       <groupId>com.litongjava</groupId>
       <artifactId>tio-boot</artifactId>
       <version>${tio-boot.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.litongjava</groupId>
+      <artifactId>netty-boot</artifactId>
+      <version>1.0.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
