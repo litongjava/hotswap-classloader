@@ -5,7 +5,6 @@ import com.litongjava.context.Context;
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.watcher.HotSwapWatcher;
 import com.litongjava.hotswap.wrapper.tio.boot.TioBootArgument;
-import com.litongjava.hotswap.wrapper.tio.boot.TioBootRestartServer;
 import com.litongjava.netty.boot.NettyApplication;
 import com.litongjava.tio.constants.TioCoreConfigKeys;
 import com.litongjava.tio.utils.environment.EnvUtils;
@@ -73,7 +72,7 @@ public class NettyApplicationWrapper {
 
   public static Context runDev(Class<?>[] primarySources, BootConfiguration config, String[] args) {
     if (hotSwapWatcher == null) {
-      hotSwapWatcher = new HotSwapWatcher(new TioBootRestartServer());
+      hotSwapWatcher = new HotSwapWatcher(new NettyBootRestartServer());
       log.info("start hotswap watcher:{}", hotSwapWatcher);
       hotSwapWatcher.start();
     }
