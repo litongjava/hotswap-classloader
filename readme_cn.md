@@ -1,4 +1,4 @@
-# hotswap-classloader: 动态热加载
+# hotswap-classloader: java类动态编译加载
 [English](readme.md) | [中文](readme_cn.md)
 ## 1. 介绍
 
