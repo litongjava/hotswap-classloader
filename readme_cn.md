@@ -2,6 +2,10 @@
 
 [English](readme.md) | [中文](readme_cn.md)
 
+## 0. 演示
+[演示代码](https://github.com/litongjava/tio-boot-hotswap-classloadler-demo)
+[演示视频](https://www.bilibili.com/video/BV1WzPUeLEUH)
+
 ## 1. 介绍
 
 **hotswap-classloader** 是一个基于 JVM 的动态类加载器。它结合了 *HotSwapWatcher* 和 *HotSwapClassloader* 技术，能够实时监测 class 文件的变化并自动加载。该项目的设计灵感来源于 [jfinal-undertow](https://gitee.com/jfinal/jfinal-undertow/tree/master/src/main/java/com/jfinal/server/undertow/hotswap) 的热加载方案。
