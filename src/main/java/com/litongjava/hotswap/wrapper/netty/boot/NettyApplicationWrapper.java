@@ -6,7 +6,7 @@ import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.watcher.HotSwapWatcher;
 import com.litongjava.hotswap.wrapper.tio.boot.TioBootArgument;
 import com.litongjava.netty.boot.NettyApplication;
-import com.litongjava.tio.constants.TioCoreConfigKeys;
+import com.litongjava.tio.consts.TioCoreConfigKeys;
 import com.litongjava.tio.utils.environment.EnvUtils;
 
 import lombok.extern.slf4j.Slf4j;
