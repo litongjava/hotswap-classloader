@@ -1,11 +1,15 @@
 package com.litongjava.hotswap.wrapper.tio.boot;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadFactory;
+
 import com.litongjava.context.BootConfiguration;
 import com.litongjava.context.Context;
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.watcher.HotSwapWatcher;
+import com.litongjava.hotswap.wrapper.TioBootArgument;
 import com.litongjava.tio.boot.TioApplication;
-import com.litongjava.tio.consts.TioCoreConfigKeys;
+import com.litongjava.tio.boot.server.TioBootServer;
 import com.litongjava.tio.utils.environment.EnvUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TioApplicationWrapper {
   protected static volatile HotSwapWatcher hotSwapWatcher;
+  public static final String HOTSWAP_WATCH_FILE_ENABLED_KEY = "hotswap.watch.file.enabled";
 
   public static Context run(Class<?> primarySource, String[] args) {
     return run(new Class<?>[] { primarySource }, args);
@@ -71,12 +76,14 @@ public class TioApplicationWrapper {
 
   public static Context runDev(Class<?>[] primarySources, BootConfiguration config, String[] args) {
     if (hotSwapWatcher == null) {
-      hotSwapWatcher = new HotSwapWatcher(new TioBootRestartServer());
+      boolean watchFileChanges = EnvUtils.getBoolean(HOTSWAP_WATCH_FILE_ENABLED_KEY, true);
+      hotSwapWatcher = new HotSwapWatcher(new TioBootRestartServer(), watchFileChanges);
+      log.info("{}={}", HOTSWAP_WATCH_FILE_ENABLED_KEY, watchFileChanges);
       log.info("start hotswap watcher:{}", hotSwapWatcher);
       hotSwapWatcher.start();
     }
 
-    EnvUtils.set(TioCoreConfigKeys.TIO_CORE_HOTSWAP_RELOAD, "true");
+    // EnvUtils.set(TioCoreConfigKeys.TIO_CORE_HOTSWAP_RELOAD, "true");
     // 获取自定义的classLoalder
     ClassLoader hotSwapClassLoader = HotSwapUtils.getClassLoader();
     log.info("new hotswap class loader:{}", hotSwapClassLoader);
@@ -84,7 +91,12 @@ public class TioApplicationWrapper {
 
     // run
     Context context = TioApplication.run(primarySources, config, args);
+    ThreadFactory workThreadFactory = TioBootServer.me().getWorkThreadFactory();
+    ExecutorService bizExecutor = TioBootServer.me().getBizExecutor();
+
     TioBootArgument.init(primarySources, config, args, context, true);
+    TioBootArgument.workThreadFactory = workThreadFactory;
+    TioBootArgument.bizExecutor = bizExecutor;
 
     return context;
 

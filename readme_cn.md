@@ -110,61 +110,40 @@ public class SklearnWebApp {
 }
 ```
 
-编写 `SelfRestart` 类，实现 `RestartServer` 接口中的方法：
+### 2.3 `hotswap.watch`（文件监听开关）
+
+默认情况会开启 class 文件监听，保存文件后自动重启并热加载。  
+如果你只希望通过命令行手动重启（输入 `r` 后回车），可以关闭文件监听：
+
+```properties
+hotswap.watch.file.enabled=false
+```
+
+说明：
+
+1. 默认值是 `true`（等价于 `EnvUtils.getBoolean("hotswap.watch.file.enabled", true)`）。
+2. 设置为 `false` 后，不再监听文件变化。
+3. 设置为 `false` 后，控制台仍会提示并支持 `r + Enter` 手动重启。
+
+Tio-boot 启动示例：
 
 ```java
-package com.litongjava.tio.boot.djl;
+package com.litongjava.diamond.boradcast;
 
-import com.litongjava.hotswap.debug.Diagnostic;
-import com.litongjava.hotswap.kit.HotSwapUtils;
-import com.litongjava.hotswap.server.RestartServer;
-import com.litongjava.hotswap.wrapper.forkapp.ForkAppBootArgument;
-import com.litongjava.tio.boot.TioApplication;
-import com.litongjava.tio.boot.context.Context;
-import lombok.extern.slf4j.Slf4j;
+import com.litongjava.annotation.AComponentScan;
+import com.litongjava.diamond.boradcast.config.AdminAppConfig;
+import com.litongjava.hotswap.wrapper.tio.boot.TioApplicationWrapper;
+import com.litongjava.tio.utils.environment.EnvUtils;
 
-@Slf4j
-public class SelfRestart implements RestartServer {
-  
-  @Override
-  public boolean isStarted() {
-    return ForkAppBootArgument.getContext().isRunning();
-  }
-
-  @Override
-  public void restart() {
-    System.err.println("loading");
+@AComponentScan("com.litongjava.diamond.boradcast.controller")
+public class BoradcastAdminApp {
+  public static void main(String[] args) {
+    EnvUtils.load(args);
     long start = System.currentTimeMillis();
-
-    stop();
-    // 获取新的 ClassLoader
-    ClassLoader hotSwapClassLoader = HotSwapUtils.newClassLoader();
-    if (Diagnostic.isDebug()) {
-      log.info("new classLoader: {}", hotSwapClassLoader);
-    }
-
-    // 在启动新的 spring-boot 应用之前，必须设置当前线程的上下文 ClassLoader
-    Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
-
-    // 获取启动类及启动参数
-    Class<?> clazz = ForkAppBootArgument.getBootClazz();
-    String[] args = ForkAppBootArgument.getArgs();
-    // 启动应用
-    start(clazz, args);
-    
+    AdminAppConfig config = new AdminAppConfig();
+    TioApplicationWrapper.run(BoradcastAdminApp.class, config, args);
     long end = System.currentTimeMillis();
-    System.err.println("Loading complete in " + (end - start) + " ms (^_^)\n");
-  }
-
-  @Override
-  public void start(Class<?> primarySource, String[] args) {
-    Context context = TioApplication.run(primarySource, args);
-    ForkAppBootArgument.setContext(context);
-  }
-
-  @Override
-  public void stop() {
-    ForkAppBootArgument.getContext().close();
+    System.out.println((end - start) + "(ms)");
   }
 }
 ```

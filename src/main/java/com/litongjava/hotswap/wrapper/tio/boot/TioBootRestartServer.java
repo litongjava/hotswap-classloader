@@ -3,13 +3,15 @@ package com.litongjava.hotswap.wrapper.tio.boot;
 import com.litongjava.context.Context;
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.server.RestartServer;
+import com.litongjava.hotswap.wrapper.TioBootArgument;
 import com.litongjava.tio.boot.TioApplication;
+import com.litongjava.tio.boot.server.TioBootServer;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author create by ping-e-lee on 2021年6月23日 上午7:43:44 
- * @version 1.0 
+ * @author create by ping-e-lee on 2021年6月23日 上午7:43:44
+ * @version 1.0
  * @desc 不要被server的名字所迷惑,这仅仅是一个重启类
  */
 @Slf4j
@@ -33,6 +35,9 @@ public class TioBootRestartServer implements RestartServer {
     log.info("new classLoader:{}", hotSwapClassLoader);
     // 在启动新的spring-boot应用之前必须设置上下文加载器
     Thread.currentThread().setContextClassLoader(hotSwapClassLoader);
+    TioBootServer tioBootServer = TioBootServer.me();
+    tioBootServer.setWorkThreadFactory(TioBootArgument.workThreadFactory);
+    tioBootServer.setBizExecutor(TioBootArgument.bizExecutor);
 
     // 启动Application
     Context context = null;

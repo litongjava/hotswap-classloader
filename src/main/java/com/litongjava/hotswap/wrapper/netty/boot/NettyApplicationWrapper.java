@@ -4,7 +4,7 @@ import com.litongjava.context.BootConfiguration;
 import com.litongjava.context.Context;
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.watcher.HotSwapWatcher;
-import com.litongjava.hotswap.wrapper.tio.boot.TioBootArgument;
+import com.litongjava.hotswap.wrapper.TioBootArgument;
 import com.litongjava.netty.boot.NettyApplication;
 import com.litongjava.tio.consts.TioCoreConfigKeys;
 import com.litongjava.tio.utils.environment.EnvUtils;
@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NettyApplicationWrapper {
   protected static volatile HotSwapWatcher hotSwapWatcher;
+  public static final String HOTSWAP_WATCH_FILE_ENABLED_KEY = "hotswap.watch.file.enabled";
 
   public static Context run(Class<?> primarySource, String[] args) {
     return run(new Class<?>[] { primarySource }, args);
@@ -72,7 +73,9 @@ public class NettyApplicationWrapper {
 
   public static Context runDev(Class<?>[] primarySources, BootConfiguration config, String[] args) {
     if (hotSwapWatcher == null) {
-      hotSwapWatcher = new HotSwapWatcher(new NettyBootRestartServer());
+      boolean watchFileChanges = EnvUtils.getBoolean(HOTSWAP_WATCH_FILE_ENABLED_KEY, true);
+      hotSwapWatcher = new HotSwapWatcher(new NettyBootRestartServer(), watchFileChanges);
+      log.info("{}={}", HOTSWAP_WATCH_FILE_ENABLED_KEY, watchFileChanges);
       log.info("start hotswap watcher:{}", hotSwapWatcher);
       hotSwapWatcher.start();
     }

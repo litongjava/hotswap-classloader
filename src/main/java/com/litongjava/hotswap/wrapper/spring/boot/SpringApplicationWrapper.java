@@ -9,6 +9,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.watcher.HotSwapWatcher;
+import com.litongjava.tio.utils.environment.EnvUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SpringApplicationWrapper {
   protected static volatile HotSwapWatcher hotSwapWatcher;
+  public static final String HOTSWAP_WATCH_FILE_ENABLED_KEY = "hotswap.watch.file.enabled";
 
   /**
    * 整合spring-boot 1.2.x
@@ -99,8 +101,10 @@ public class SpringApplicationWrapper {
     // 在spring-boot启动之后再启动hotSwapWatcher
     if (hotSwapWatcher == null) {
       // 使用反射执行下面的代码
+      boolean watchFileChanges = EnvUtils.getBoolean(HOTSWAP_WATCH_FILE_ENABLED_KEY, true);
+      log.info("{}={}", HOTSWAP_WATCH_FILE_ENABLED_KEY, watchFileChanges);
       log.info("start hotSwapWatcher");
-      hotSwapWatcher = new HotSwapWatcher(new SpringBootRestartServer());
+      hotSwapWatcher = new HotSwapWatcher(new SpringBootRestartServer(), watchFileChanges);
       hotSwapWatcher.start();
     }
 

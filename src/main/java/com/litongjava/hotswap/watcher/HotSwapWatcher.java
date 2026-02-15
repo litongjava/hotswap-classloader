@@ -2,6 +2,8 @@ package com.litongjava.hotswap.watcher;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class HotSwapWatcher extends Thread {
 
   protected RestartServer server;
+  private final boolean watchFileChanges;
 
   // protected int watchingInterval = 1000; // 1900 与 2000 相对灵敏
   protected int watchingInterval = 500;
@@ -39,15 +42,23 @@ public class HotSwapWatcher extends Thread {
   protected List<Path> watchingPaths;
   private WatchKey watchKey;
   protected volatile boolean running = true;
+  private Thread consoleListener;
 
   public HotSwapWatcher(RestartServer server) {
+    this(server, true);
+  }
+
+  public HotSwapWatcher(RestartServer server, boolean watchFileChanges) {
     setName("HotSwapWatcher");
     // 避免在调用 deploymentManager.stop()、undertow.stop() 后退出 JVM
     setDaemon(false);
     setPriority(Thread.MAX_PRIORITY);
 
     this.server = server;
-    this.watchingPaths = buildWatchingPaths();
+    this.watchFileChanges = watchFileChanges;
+    if (watchFileChanges) {
+      this.watchingPaths = buildWatchingPaths();
+    }
 
   }
 
@@ -95,6 +106,12 @@ public class HotSwapWatcher extends Thread {
   }
 
   protected void doRun() throws IOException {
+    startConsoleListener();
+    if (!watchFileChanges) {
+      log.info("file watch disabled, restart only by console command: r");
+      return;
+    }
+
     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     WatchService watcher = FileSystems.getDefault().newWatchService();
 
@@ -118,6 +135,41 @@ public class HotSwapWatcher extends Thread {
 //    	watch(watcher);
 //    }
 
+  }
+
+  private void startConsoleListener() {
+    if (consoleListener != null) {
+      return;
+    }
+    consoleListener = new Thread(() -> {
+      try {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        while (running) {
+          String line = reader.readLine();
+          if (line == null) {
+            break;
+          }
+          String cmd = line.trim();
+          if ("r".equalsIgnoreCase(cmd)) {
+            boolean started = server != null && server.isStarted();
+            if (started) {
+              log.info("console command: r, restart server:{}", server);
+              server.restart();
+            } else {
+              log.info("console command: r, server not started");
+            }
+          }
+        }
+      } catch (Throwable e) {
+        if (running) {
+          UndertowKit.doNothing(e);
+        }
+      }
+    });
+    consoleListener.setName("HotSwapConsoleListener");
+    consoleListener.setDaemon(true);
+    consoleListener.start();
+    log.info("console input: type 'r' and press Enter to restart");
   }
 
   private void watch(WatchService watcher) {

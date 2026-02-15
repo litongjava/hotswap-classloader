@@ -3,7 +3,7 @@ package com.litongjava.hotswap.wrapper.netty.boot;
 import com.litongjava.context.Context;
 import com.litongjava.hotswap.kit.HotSwapUtils;
 import com.litongjava.hotswap.server.RestartServer;
-import com.litongjava.hotswap.wrapper.tio.boot.TioBootArgument;
+import com.litongjava.hotswap.wrapper.TioBootArgument;
 import com.litongjava.netty.boot.NettyApplication;
 
 import lombok.extern.slf4j.Slf4j;

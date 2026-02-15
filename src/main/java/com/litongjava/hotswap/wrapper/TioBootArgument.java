@@ -1,11 +1,14 @@
-package com.litongjava.hotswap.wrapper.tio.boot;
+package com.litongjava.hotswap.wrapper;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 import com.litongjava.context.BootConfiguration;
 import com.litongjava.context.Context;
 
 /**
- * @author create by ping-e-lee on 2021年6月23日 上午8:48:16 
- * @version 1.0 
+ * @author create by ping-e-lee on 2021年6月23日 上午8:48:16
+ * @version 1.0
  * @desc 保存tio-boot启动时的启动参数
  */
 public class TioBootArgument {
@@ -15,6 +18,8 @@ public class TioBootArgument {
   public static String[] args;
   public static Context context;
   public static boolean isDev = false;
+  public static ThreadFactory workThreadFactory;
+  public static ExecutorService bizExecutor;
 
   public static void init(Class<?>[] primarySources, BootConfiguration config, String[] args, Context context,
       boolean isDev) {
