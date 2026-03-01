@@ -40,7 +40,7 @@
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
   <!-- 详情请见：https://central.sonatype.com/artifact/com.litongjava/hotswap-classloader -->
-  <version>1.2.2/version</version>
+  <version>1.2.8</version>
 </dependency>
 ```
 

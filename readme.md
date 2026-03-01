@@ -21,12 +21,13 @@
 ### 2.1 Integration with spring-boot
 
 1. **Add Dependency**
+
 ```xml
 <dependency>
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
   <!--https://central.sonatype.com/artifact/com.litongjava/hotswap-classloader-->
-  <version>1.2.2/version>
+  <version>1.2.8</version>
 </dependency>
 ```
 
