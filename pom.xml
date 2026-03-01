@@ -1,11 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
   <version>1.2.8</version>
   <packaging>jar</packaging>
   <name>hotswap-classloader</name>
-  <description>fast java dynamic classloader , support tio-boot, spring-boot , etc.</description>
+  <description>fast java dynamic classloader , support tio-boot, spring-boot ,
+    etc.</description>
   <url>https://github.com/litongjava/hotswap-classloader</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -68,7 +71,8 @@
 
   <scm>
     <connection>scm:git:git@github.com:litongjava/hotswap-classloader.git</connection>
-    <developerConnection>scm:git:git@github.com:litongjava/hotswap-classloader.git</developerConnection>
+    <developerConnection>
+      scm:git:git@github.com:litongjava/hotswap-classloader.git</developerConnection>
     <url>git@github.com:litongjava/hotswap-classloader.git</url>
   </scm>
   <build>
@@ -93,7 +97,8 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.9.1</version>
         <configuration>
-          <additionalparam>-Xdoclint:none</additionalparam> <!-- 添加这个压制JavaDoc检查 -->
+          <!-- 添加这个压制JavaDoc检查 -->
+          <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
         <executions>
           <execution>
@@ -104,7 +109,7 @@
           </execution>
         </executions>
       </plugin>
-      <!-- GPG mvn clean deploy -P release -Dgpg.passphrase=YourPassphase -->
+      <!-- GPG mvn clean deploy -Dgpg.passphrase=YourPassphase -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
@@ -120,14 +125,12 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.7</version>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.7.0</version>
         <extensions>true</extensions>
         <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+          <publishingServerId>central</publishingServerId>
         </configuration>
       </plugin>
     </plugins>
