@@ -27,7 +27,7 @@
   <groupId>com.litongjava</groupId>
   <artifactId>hotswap-classloader</artifactId>
   <!--https://central.sonatype.com/artifact/com.litongjava/hotswap-classloader-->
-  <version>1.2.8</version>
+  <version>1.2.9</version>
 </dependency>
 ```
 
